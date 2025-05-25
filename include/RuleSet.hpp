@@ -18,22 +18,15 @@ class RuleSet : public IRuleSet {
 public:
     RuleSet() = default;
 
-    void AddRule(std::shared_ptr<IRule> rule) override {
-        rules.emplace_back(std::move(rule));
-    }
-
-     [[nodiscard]] bool Empty() const override { return rules.empty(); }
+    void AddRule(std::shared_ptr<IRule> rule) override;
+    [[nodiscard]] bool Empty() const override;
 
     // Finds first invalid rule
-    [[nodiscard]] std::shared_ptr<IRule> AnyBroken() const override {
-        const auto it = std::ranges::find_if(rules, [&](const auto& rule) {
-            return !rule->Evaluate();
-        });
-        return it != rules.end() ? *it : nullptr;
-    }
+    [[nodiscard]] std::shared_ptr<IRule> AnyBroken() const override;
 private:
     std::vector<std::shared_ptr<IRule>> rules;
 };
+
 
 APL_NAMESPACE_END
 
