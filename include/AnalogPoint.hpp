@@ -34,14 +34,20 @@ public:
     AnalogPoint(AnalogPoint &&) = default;
     AnalogPoint(const AnalogPoint &) = default;
 
-    bool operator<(this auto &&self, auto &&value) { return self.GetRbdValue() < value; }
-    bool operator>(this auto &&self, auto &&value) { return self.GetRbdValue() > value; }
+    bool operator<(this auto&&self, double value) { return self.GetRbdValue() < value; }
+    bool operator>(this auto&&self, double value) { return self.GetRbdValue() > value; }
+
+    template<class Self, class V>
+    bool operator<(this Self&& self, V&& other) { return self.GetRbdValue() < other.GetRbdValue(); }
 
     [[nodiscard]] bool InAlarm() const override;
     [[nodiscard]] AlarmProxy GetAlarmState() const;
     [[nodiscard]] double GetRbdValue() const { return value_; }
 
+    void AddUpperBoundary(const std::shared_ptr<AnalogPoint> &otherPoint);
     void AddUpperBoundary(double value);
+
+    void AddLowerBoundary(const std::shared_ptr<AnalogPoint> &otherPoint);
     void AddLowerBoundary(double value);
 
     double value_ = 0.0;

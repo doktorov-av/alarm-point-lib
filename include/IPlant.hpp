@@ -12,7 +12,7 @@ APL_NAMESPACE_BEGIN
 class IPlant {
 public:
     virtual ~IPlant () = default;;
-    virtual block_mode_t ActiveMode() const = 0;
+    [[nodiscard]] virtual block_mode_t ActiveMode() const = 0;
 };
 
 APL_NAMESPACE_END

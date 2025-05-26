@@ -11,14 +11,13 @@
 #include <memory>
 
 #include "IRule.hpp"
-#include "numeric"
 #include "utility"
 
 APL_NAMESPACE_BEGIN
 
 namespace rules {
 
-namespace detail {
+namespace details {
 
 template<typename T>
 concept formattable = requires(T & v, std::format_context ctx) {
@@ -29,51 +28,94 @@ struct C {};
 static_assert(!formattable<C>, "C should not be formattable");
 static_assert(formattable<int>, "int should be formattable");
 
-} // namespace detail
+template<typename T>
+ struct ValueAccessor {
+    static auto Get(const T& value) -> const T& { return value; }
+    static bool IsValid(const T&) { return true; }
+};
+
+// Specialization for raw pointers (e.g., AnalogPoint*)
+template<typename T>
+struct ValueAccessor<T*> {
+    static auto Get(T* value) -> decltype(ValueAccessor<T>::Get(*value)) {
+        return ValueAccessor<T>::Get(*value);  // Dereference and recurse
+    }
+    static bool IsValid(T* value) {
+        return value && ValueAccessor<T>::IsValid(*value);
+    }
+};
+
+// Specialization for std::weak_ptr
+template<typename T>
+struct ValueAccessor<std::weak_ptr<T>> {
+    static auto Get(const std::weak_ptr<T>& value) -> decltype(ValueAccessor<T>::Get(*value.lock())) {
+        return ValueAccessor<T>::Get(*value.lock());  // Lock, dereference, and recurse
+    }
+    static bool IsValid(const std::weak_ptr<T>& value) {
+        return !value.expired() && ValueAccessor<T>::IsValid(*value.lock());
+    }
+};
+
+// Helper functions to strip references/cv-qualifiers
+template<typename T>
+decltype(auto) Get(T&& val) {
+    using CleanT = std::remove_cvref_t<T>;
+    return ValueAccessor<CleanT>::Get(std::forward<T>(val));
+}
+
+template<typename T>
+bool IsValid(T&& val) {
+    using CleanT = std::remove_cvref_t<T>;
+    return ValueAccessor<CleanT>::IsValid(std::forward<T>(val));
+}
+
+} // namespace details
 
 
 template<class T, class V, class Comp>
 class Compare : public IRule {
 public:
-    using msg_gen_t = std::function<std::string(const V & /* value_ */, const T & /* threshold */)>;
+    using msg_gen_t = std::function<std::string(const V& /* value_ */, const T& /* threshold */)>;
 
-    Compare(T threshold, const V *value) : threshold_(std::move(threshold)), value_(std::move(value)) {}
+    Compare(T threshold, V value) : threshold_(threshold), value_(value) {}
 
-    Compare(T threshold, const V *value, msg_gen_t msgGen) : Compare(std::move(threshold), std::move(value)) {
-        messageGen = std::move(msgGen);
+    Compare(T threshold, V value, msg_gen_t msgGen) : Compare(threshold, value) { messageGen_ = std::move(msgGen); }
+
+    Compare(T threshold, V value, std::string_view failmsg) :
+        Compare(threshold, value,
+                failmsg.empty() ? msg_gen_t{}
+                                : msg_gen_t([failmsg](auto&&, auto&&) { return std::string(failmsg); })) {}
+
+    [[nodiscard]] bool Evaluate() const override {
+        if (!details::IsValid(value_) || !details::IsValid(threshold_)) {
+            return false;
+        }
+        return Comp{}(details::Get(value_), details::Get(threshold_));
     }
 
-    Compare(T threshold, const V *value, std::string_view failmsg) :
-        Compare(std::move(threshold), std::move(value),
-                msg_gen_t([failmsg](const V &val, const T &th) { return std::string(failmsg.begin(), failmsg.end()); })) {}
-
-    [[nodiscard]] bool Evaluate() const override { return value_ && Comp{}(*value_, threshold_); }
-
     [[nodiscard]] std::string GetFailDescription() const override {
-        if (messageGen)
-            return messageGen(*value_, threshold_);
+        if (messageGen_) {
+            return messageGen_(value_, threshold_);
+        }
 
-        if constexpr (detail::formattable<T> && detail::formattable<V>) {
-            return std::format("Comparison rule between for {} with threshold = {} is failed", *value_, threshold_);
+        if constexpr (details::formattable<T> && details::formattable<V>) {
+            return std::format("Comparison failed: {} vs threshold {}", value_, threshold_);
         } else {
             return "Comparison rule failed";
         }
     }
 private:
-    T threshold_ = T{};
-    const V *value_ = {};
-    msg_gen_t messageGen = nullptr;
+    T threshold_;
+    V value_;
+    msg_gen_t messageGen_ = nullptr;
 };
 
-#define DEF_COMPARE_RULE(functionName, comparator) \
-template<class T, class V, class Ret = Compare<T, V, comparator>> \
-decltype(auto) functionName(T threshold, const V *value, std::string_view str = {}) { \
-    return str.empty() ? std::make_shared<Ret>(std::move(threshold), value) : std::make_shared<Ret>(std::move(threshold), value, str); \
-} \
-template<class T, class V, class Ret = Compare<T, V, comparator>> \
-decltype(auto) functionName(T threshold, const V *value, const typename Ret::msg_gen_t& msgGen) { \
-    return std::make_shared<Ret>(std::move(threshold), value, msgGen); \
-}
+#define DEF_COMPARE_RULE(functionName, comparator)                                                             \
+    template<class T, class V, class Msg = std::string_view>                                                   \
+    auto functionName(T threshold, V value, Msg &&msg = {}) {                                                  \
+        return std::make_shared<Compare<T, V, comparator>>(std::forward<T>(threshold), std::forward<V>(value), \
+                                                           std::forward<Msg>(msg));                            \
+    }
 
 DEF_COMPARE_RULE(Less, std::less<>);
 DEF_COMPARE_RULE(Greater, std::greater<>);

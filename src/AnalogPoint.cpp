@@ -4,18 +4,31 @@
 //
 
 #include "AnalogPoint.hpp"
+
+#include <iostream>
+
 #include "Rules.hpp"
 
 APL_NAMESPACE_BEGIN
 
+void AnalogPoint::AddUpperBoundary(const std::shared_ptr<AnalogPoint> &otherPoint) {
+    rules_.AddRule(rules::Less(std::weak_ptr{otherPoint}, this));
+}
+
+void AnalogPoint::AddLowerBoundary(const std::shared_ptr<AnalogPoint> &otherPoint) {
+
+}
+
+
 void apl::AnalogPoint::AddUpperBoundary(double value) {
-    rules_.AddRule(rules::Less(value, this, [](const apl::AnalogPoint& self, const double& bound) {
-        return std::format("Lower boundary exceeded: current value = {}, bound = {}", self.GetRbdValue(), bound);
+    rules_.AddRule(rules::Less(value, this, [](const AnalogPoint* self, double bound) {
+        return std::format("Lower boundary exceeded: current value = {}, bound = {}", self->GetRbdValue(), bound);
     }));
 }
+
 void apl::AnalogPoint::AddLowerBoundary(double value) {
-    rules_.AddRule(rules::Greater(value, this, [](const apl::AnalogPoint& self, const double& bound) {
-        return std::format("Upper boundary exceeded: current = {}, bound = {}", self.GetRbdValue(), bound);
+    rules_.AddRule(rules::Greater(value, this, [](const AnalogPoint* self, double bound) {
+        return std::format("Upper boundary exceeded: current = {}, bound = {}", self->GetRbdValue(), bound);
     }));
 }
 
