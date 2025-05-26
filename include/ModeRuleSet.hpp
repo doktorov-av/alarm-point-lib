@@ -21,8 +21,8 @@ public:
     void AddRule(std::shared_ptr<IRule> rule) override;
     [[nodiscard]] std::shared_ptr<IRule> AnyBroken() const override;
 protected:
-    std::shared_ptr<IRule> AnyGeneralBroken() const;
-    std::shared_ptr<IRule> AnyModeBroken() const;
+    [[nodiscard]] std::shared_ptr<IRule> AnyGeneralBroken() const;
+    [[nodiscard]] std::shared_ptr<IRule> AnyModeBroken() const;
 private:
     struct ModeEntry {
         std::shared_ptr<IRule> rule_ = nullptr;

@@ -14,9 +14,19 @@
 APL_NAMESPACE_BEGIN
 
 class AnalogPoint : public IAlarmable {
-public:
-    using tp = std::chrono::system_clock::time_point;
-
+private:
+    class AlarmProxy {
+    public:
+        explicit AlarmProxy(std::shared_ptr<IRule> brokenRule) : alarmRule_(std::move(brokenRule)) {}
+        decltype(auto) GetBrokenRule() {
+            return alarmRule_;
+        }
+        operator bool(this auto&& self) {
+            return self.alarmRule_ != nullptr;
+        }
+    private:
+        std::shared_ptr<IRule> alarmRule_;
+    };
 public:
     explicit AnalogPoint(unsigned int id) : id_(id) { assert(id != 0); };
 
@@ -27,12 +37,14 @@ public:
     bool operator<(this auto &&self, auto &&value) { return self.GetRbdValue() < value; }
     bool operator>(this auto &&self, auto &&value) { return self.GetRbdValue() > value; }
 
-    bool InAlarm() const override;
+    [[nodiscard]] bool InAlarm() const override;
+    [[nodiscard]] AlarmProxy GetAlarmState() const;
+    [[nodiscard]] double GetRbdValue() const { return value_; }
+
     void AddUpperBoundary(double value);
     void AddLowerBoundary(double value);
 
-    [[nodiscard]] double GetRbdValue() const { return value; }
-    double value = 0.0;
+    double value_ = 0.0;
 private:
     RuleSet rules_{};
     unsigned int id_;

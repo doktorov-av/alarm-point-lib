@@ -28,7 +28,7 @@ std::shared_ptr<IRule> ModeRuleSet::AnyGeneralBroken() const {
     return generalRules_.AnyBroken();
 }
 
-std::shared_ptr<IRule> ModeRuleSet::AnyModeBroken() const {
+[[maybe_unused]] std::shared_ptr<IRule> ModeRuleSet::AnyModeBroken() const {
     // check mode-specific rules then
     const auto strong = plant_.lock();
     if (!strong) // @todo handle plant invalid state ? (no plant, no rules are broken?)
@@ -37,7 +37,7 @@ std::shared_ptr<IRule> ModeRuleSet::AnyModeBroken() const {
     const auto activeMode = strong->ActiveMode();
     // find first rule that is broken
     const auto it = std::ranges::find_if(modeEntries_, [&activeMode](const auto &entry) {
-        return entry.mode_ == activeMode ? !entry.rule_->Evaluate() : false;
+        return entry.mode_ == activeMode && !entry.rule_->Evaluate();
     });
     return it != modeEntries_.end() ? it->rule_ : nullptr;
 }

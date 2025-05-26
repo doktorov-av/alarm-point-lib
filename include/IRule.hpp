@@ -12,6 +12,7 @@ class IRule {
 public:
     virtual ~IRule() = default;
     [[nodiscard]] virtual bool Evaluate() const = 0;
+    [[nodiscard]] virtual std::string GetFailDescription() const = 0;
 };
 
 APL_NAMESPACE_END
