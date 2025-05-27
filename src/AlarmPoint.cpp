@@ -5,9 +5,13 @@
 
 #include "AlarmPoint.hpp"
 
-bool apl::AlarmPoint::InAlarm() const {
+APL_NAMESPACE_BEGIN
+
+bool AlarmPoint::InAlarm() const {
     return static_cast<bool>(GetAlarmState());
 }
-apl::AlarmPoint::AlarmProxy apl::AlarmPoint::GetAlarmState() const {
+AlarmPoint::AlarmProxy AlarmPoint::GetAlarmState() const {
     return AlarmProxy{rules_.AnyBroken()};
 }
+
+APL_NAMESPACE_END
