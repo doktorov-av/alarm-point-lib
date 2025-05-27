@@ -52,12 +52,12 @@ public:
 
 template<typename T>
 void MultiState<std::basic_string<T>>::Prohibit(string_view state) {
-    rules_.AddRule(rules::NotEqual(state, this));
+    GetRules().AddRule(rules::NotEqual(state, this));
 }
 
 template<typename T>
 void MultiState<T>::Prohibit(const T &state) {
-    rules_.AddRule(rules::NotEqual(state, this));
+    GetRules().AddRule(rules::NotEqual(state, this));
 }
 
 APL_NAMESPACE_END

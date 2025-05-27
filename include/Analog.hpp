@@ -14,7 +14,7 @@ class Analog : public AlarmPoint {
 public:
     Analog() = default;
     Analog(Analog &&) = default;
-    Analog(const Analog &) = default;
+    Analog(const Analog &) = delete;
 
     [[nodiscard]] virtual double GetValue() const = 0;
 

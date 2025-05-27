@@ -37,7 +37,7 @@ template<typename T>
 // Specialization for raw pointers (e.g., Analog*)
 template<typename T>
 struct ValueAccessor<T*> {
-    static auto Get(T* value) -> decltype(ValueAccessor<T>::Get(*value)) {
+    static decltype(auto) Get(T* value) {
         return ValueAccessor<T>::Get(*value);  // Dereference and recurse
     }
     static bool IsValid(T* value) {
@@ -48,11 +48,22 @@ struct ValueAccessor<T*> {
 // Specialization for std::weak_ptr
 template<typename T>
 struct ValueAccessor<std::weak_ptr<T>> {
-    static auto Get(const std::weak_ptr<T>& value) -> decltype(ValueAccessor<T>::Get(*value.lock())) {
+    static decltype(auto) Get(const std::weak_ptr<T>& value)  {
         return ValueAccessor<T>::Get(*value.lock());  // Lock, dereference, and recurse
     }
     static bool IsValid(const std::weak_ptr<T>& value) {
         return !value.expired() && ValueAccessor<T>::IsValid(*value.lock());
+    }
+};
+
+// Specialization for std::shared_ptr
+template<typename T>
+struct ValueAccessor<std::shared_ptr<T>> {
+    static decltype(auto) Get(const std::shared_ptr<T>& value) {
+        return ValueAccessor<T>::Get(*value.get());  // dereference and recurse
+    }
+    static bool IsValid(const std::shared_ptr<T>& value) {
+        return !value && ValueAccessor<T>::IsValid(*value.get());
     }
 };
 

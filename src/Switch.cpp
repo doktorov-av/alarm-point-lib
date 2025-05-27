@@ -9,8 +9,8 @@
 APL_NAMESPACE_BEGIN
 
 void Switch::SetAlarmState(bool alarmState) {
-    rules_.Clear();
-    rules_.AddRule(rules::NotEqual(alarmState, this));
+    GetRules().Clear();
+    GetRules().AddRule(rules::NotEqual(alarmState, this));
 }
 
 APL_NAMESPACE_END

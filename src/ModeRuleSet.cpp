@@ -21,7 +21,7 @@ std::shared_ptr<IRule> ModeRuleSet::AnyBroken() const {
     if (auto ptr = AnyGeneralBroken()) {
         return ptr;
     }
-    return AnyGeneralBroken();
+    return AnyModeBroken();
 }
 
 std::shared_ptr<IRule> ModeRuleSet::AnyGeneralBroken() const {
