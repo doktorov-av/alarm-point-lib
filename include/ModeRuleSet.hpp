@@ -6,9 +6,9 @@
 #ifndef MODEPOINT_HPP
 #define MODEPOINT_HPP
 
+#include <Types.hpp>
 #include "IPlant.hpp"
 #include "RuleSet.hpp"
-#include <Types.hpp>
 
 APL_NAMESPACE_BEGIN
 
@@ -16,14 +16,17 @@ class ModeRuleSet : public IRuleSet {
 public:
     explicit ModeRuleSet(const std::shared_ptr<IPlant> &plant) : plant_(plant) {}
 
-    [[nodiscard]] bool Empty() const override;
     void AddModeRule(std::shared_ptr<IRule> rule, block_mode_t mode);
     void AddRule(std::shared_ptr<IRule> rule) override;
     void Clear() override;
+
+    [[nodiscard]] bool Empty() const override;
     [[nodiscard]] std::shared_ptr<IRule> AnyBroken() const override;
+
 protected:
     [[nodiscard]] std::shared_ptr<IRule> AnyGeneralBroken() const;
     [[nodiscard]] std::shared_ptr<IRule> AnyModeBroken() const;
+
 private:
     struct ModeEntry {
         std::shared_ptr<IRule> rule_ = nullptr;
