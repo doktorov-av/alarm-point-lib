@@ -122,6 +122,8 @@ private:
 DEF_COMPARE_RULE(Less, std::less<>);
 DEF_COMPARE_RULE(Greater, std::greater<>);
 DEF_COMPARE_RULE(Equal, std::equal_to<>);
+DEF_COMPARE_RULE(NotEqual, std::not_equal_to<>);
+
 #undef DEF_COMPARE_RULE
 
 } // namespace rules

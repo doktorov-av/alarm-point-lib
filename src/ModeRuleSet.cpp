@@ -46,4 +46,9 @@ bool ModeRuleSet::Empty() const {
     return generalRules_.Empty() && modeEntries_.empty();
 }
 
+void ModeRuleSet::Clear() {
+    generalRules_.Clear();
+    modeEntries_.clear();
+}
+
 APL_NAMESPACE_END

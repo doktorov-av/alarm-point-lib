@@ -19,6 +19,7 @@ public:
     RuleSet() = default;
 
     void AddRule(std::shared_ptr<IRule> rule) override;
+    void Clear() override;
     [[nodiscard]] bool Empty() const override;
 
     // Finds first invalid rule

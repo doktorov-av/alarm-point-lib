@@ -19,6 +19,7 @@ public:
     [[nodiscard]] bool Empty() const override;
     void AddModeRule(std::shared_ptr<IRule> rule, block_mode_t mode);
     void AddRule(std::shared_ptr<IRule> rule) override;
+    void Clear() override;
     [[nodiscard]] std::shared_ptr<IRule> AnyBroken() const override;
 protected:
     [[nodiscard]] std::shared_ptr<IRule> AnyGeneralBroken() const;
