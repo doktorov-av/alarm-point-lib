@@ -34,7 +34,7 @@ template<typename T>
     static bool IsValid(const T&) { return true; }
 };
 
-// Specialization for raw pointers (e.g., AnalogPoint*)
+// Specialization for raw pointers (e.g., Analog*)
 template<typename T>
 struct ValueAccessor<T*> {
     static auto Get(T* value) -> decltype(ValueAccessor<T>::Get(*value)) {
@@ -69,12 +69,19 @@ bool IsValid(T&& val) {
     return ValueAccessor<CleanT>::IsValid(std::forward<T>(val));
 }
 
+template<class T> using get_type_t = decltype(Get(std::declval<T>()));
+
+static_assert(std::is_same_v<get_type_t<std::weak_ptr<int>>, const int&>);
+static_assert(std::is_same_v<get_type_t<int*>, const int&>);
+
 } // namespace details
 
 
 template<class T, class V, class Comp>
 class Compare : public IRule {
 public:
+    using th_type = details::get_type_t<T>;
+    using v_type = details::get_type_t<V>;
     using msg_gen_t = std::function<std::string(const V& /* value_ */, const T& /* threshold */)>;
 
     Compare(T threshold, V value) : threshold_(threshold), value_(value) {}
@@ -84,25 +91,20 @@ public:
     Compare(T threshold, V value, std::string_view failmsg) :
         Compare(threshold, value,
                 failmsg.empty() ? msg_gen_t{}
-                                : msg_gen_t([failmsg](auto&&, auto&&) { return std::string(failmsg); })) {}
+                                : msg_gen_t([failmsg](const V& /* value_ */, const T& /* threshold */) { return std::string(failmsg); })) {}
 
     [[nodiscard]] bool Evaluate() const override {
         if (!details::IsValid(value_) || !details::IsValid(threshold_)) {
             return false;
         }
-        return Comp{}(details::Get(value_), details::Get(threshold_));
+        return Comp()(details::Get(value_), details::Get(threshold_));
     }
 
     [[nodiscard]] std::string GetFailDescription() const override {
         if (messageGen_) {
             return messageGen_(value_, threshold_);
         }
-
-        if constexpr (details::formattable<T> && details::formattable<V>) {
-            return std::format("Comparison failed: {} vs threshold {}", value_, threshold_);
-        } else {
-            return "Comparison rule failed";
-        }
+        return "Comparison rule failed";
     }
 private:
     T threshold_;
