@@ -8,9 +8,12 @@
 
 APL_NAMESPACE_BEGIN
 
+Switch::Switch(std::unique_ptr<IRuleSet> &&rules) : AlarmPoint(std::move(rules)) {}
+
 void Switch::SetAlarmState(bool alarmState) {
-    GetRules().Clear();
-    GetRules().AddRule(rules::NotEqual(alarmState, this));
+    GetRules()->Clear();
+    GetRules()->AddRule(rules::NotEqual(alarmState, this));
 }
+
 
 APL_NAMESPACE_END

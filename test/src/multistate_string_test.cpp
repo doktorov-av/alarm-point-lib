@@ -14,11 +14,10 @@ public:
     }
     std::string GetState() const override { return current_it_ != states_.end() ? *current_it_ : "unknown"; }
     void AddState(std::string_view state) { current_it_ = states_.insert(std::string(state)).first; }
-    void SetState(std::string_view state) override {
+    void SetState(const std::string& state) override {
         assert(!state.empty());
         current_it_ = states_.find(std::string(state));
     };
-
 private:
     std::unordered_set<std::string> states_;
     decltype(states_)::iterator current_it_ = states_.end();

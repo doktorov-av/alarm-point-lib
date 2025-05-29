@@ -6,20 +6,29 @@
 #include "ModeAnalog.hpp"
 #include "Rules.hpp"
 
-apl::ModeAnalog::ModeAnalog(const std::shared_ptr<IPlant> &plant)  : AlarmPoint(std::make_unique<ModeRuleSet>(plant)) {}
+apl::ModeAnalog::ModeAnalog(const std::shared_ptr<IPlant> &plant) : Analog(std::make_unique<ModeRuleSet>(plant)) {
+    _modeRules = dynamic_cast<ModeRuleSet*>(GetRules());
+    assert(_modeRules);
+}
 
+// ~~~~~~~~~~~~~~~~~~~~ upper bounds overloads ~~~~~~~~~~~~~~~~~~~~ //
 void apl::ModeAnalog::AddUpperBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, apl::block_mode_t mode) {
-    GetModeRules().AddModeRule(rules::Less(otherPoint, this), mode);
+    AddUpperBoundaryImpl(otherPoint, mode);
 }
 void apl::ModeAnalog::AddUpperBoundary(double value, apl::block_mode_t mode) {
-    GetModeRules().AddModeRule(rules::Less(value, this), mode);
+    AddUpperBoundaryImpl(value, mode);
 }
+void apl::ModeAnalog::AddUpperBoundary(const apl::ModeAnalog *otherPoint) {
+    AddUpperBoundaryImpl(otherPoint);
+}
+
+// ~~~~~~~~~~~~~~~~~~~~ lower bounds overloads ~~~~~~~~~~~~~~~~~~~~ //
 void apl::ModeAnalog::AddLowerBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, apl::block_mode_t mode) {
-    GetModeRules().AddModeRule(rules::Greater(otherPoint, this), mode);
+    AddLowerBoundaryImpl(otherPoint, mode);
 }
 void apl::ModeAnalog::AddLowerBoundary(double value, apl::block_mode_t mode) {
-    GetModeRules().AddModeRule(rules::Greater(value, this), mode);
+    AddLowerBoundaryImpl(value, mode);
 }
-apl::ModeRuleSet &apl::ModeAnalog::GetModeRules() const {
-    return GetRulesAs<ModeRuleSet>();
+void apl::ModeAnalog::AddLowerBoundary(const apl::ModeAnalog *&otherPoint) {
+    AddLowerBoundaryImpl(otherPoint);
 }

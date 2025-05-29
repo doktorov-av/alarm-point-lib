@@ -16,7 +16,7 @@ class ModeRuleSet : public IRuleSet {
 public:
     explicit ModeRuleSet(const std::shared_ptr<IPlant> &plant) : plant_(plant) {}
 
-    void AddModeRule(std::shared_ptr<IRule> rule, block_mode_t mode);
+    void AddRule(std::shared_ptr<IRule> rule, block_mode_t mode);
     void AddRule(std::shared_ptr<IRule> rule) override;
     void Clear() override;
 

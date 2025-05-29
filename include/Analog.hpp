@@ -12,17 +12,14 @@ APL_NAMESPACE_BEGIN
 
 class Analog : public AlarmPoint {
 public:
-    Analog() = default;
-    Analog(Analog &&) = default;
-    Analog(const Analog &) = delete;
+    explicit Analog(std::unique_ptr<IRuleSet>&& rules_ = std::make_unique<RuleSet>());
 
     [[nodiscard]] virtual double GetValue() const = 0;
-
-    inline auto operator<=>(const Analog & other) const {
-        return GetValue() <=> other.GetValue();
+    inline auto operator<=>(this auto&& self, const Analog & other) {
+        return self.GetValue() <=> other.GetValue();
     }
-    inline auto operator<=>(double value) const {
-        return GetValue() <=> value;
+    inline auto operator<=>(this auto&& self, double value) {
+        return self.GetValue() <=> value;
     }
     void AddUpperBoundary(const std::shared_ptr<Analog> &otherPoint);
     void AddUpperBoundary(double value);

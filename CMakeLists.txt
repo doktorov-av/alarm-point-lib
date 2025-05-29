@@ -9,7 +9,7 @@ file(GLOB hdr "${CMAKE_CURRENT_LIST_DIR}/include/*.hpp")
 
 add_library(alarm-point-lib ${src} ${hdr})
 target_include_directories(alarm-point-lib PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_compile_definitions(alarm-point-lib PUBLIC

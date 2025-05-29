@@ -12,7 +12,7 @@ void ModeRuleSet::AddRule(std::shared_ptr<IRule> rule) {
     generalRules_.AddRule(std::move(rule));
 }
 
-void ModeRuleSet::AddModeRule(std::shared_ptr<IRule> rule, block_mode_t mode) {
+void ModeRuleSet::AddRule(std::shared_ptr<IRule> rule, block_mode_t mode) {
     modeEntries_.emplace_back(std::move(rule), mode);
 }
 

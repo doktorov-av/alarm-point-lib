@@ -17,13 +17,14 @@ APL_NAMESPACE_BEGIN
 template<typename T>
 class MultiState : public AlarmPoint {
 public:
-    MultiState() = default;
+    explicit MultiState(std::unique_ptr<IRuleSet> &&ruleSet = std::make_unique<RuleSet>()) :
+        AlarmPoint(std::move(ruleSet)) {}
 
-    void Prohibit(const T& state);
+    void Prohibit(const T &state);
 
     // Get current state value
     [[nodiscard]] virtual T GetState() const = 0;
-    virtual void SetState(const T& state) = 0;
+    virtual void SetState(const T &state) = 0;
 
     // Runtime check for specific state (for strings)
     [[nodiscard]] bool Is(const T &state) const { return GetState() == state; }
@@ -31,33 +32,10 @@ public:
     // Operator for rule comparisons
     bool operator==(const T &other) const { return GetState() == other; }
 };
-
-template<typename T>
-class MultiState<std::basic_string<T>> : public AlarmPoint {
-    using string = std::basic_string<T>;
-    using string_view = std::basic_string_view<T>;
-public:
-    // Get current state value
-    [[nodiscard]] virtual string GetState() const = 0;
-    virtual void SetState(string_view state) = 0;
-
-    void Prohibit(string_view state);
-
-    // Runtime check for specific state (for strings)
-    [[nodiscard]] bool Is(const T &state) const { return GetState() == state; }
-
-    // Operator for rule comparisons
-    bool operator==(const T &other) const { return GetState() == other; }
-};
-
-template<typename T>
-void MultiState<std::basic_string<T>>::Prohibit(string_view state) {
-    GetRules().AddRule(rules::NotEqual(state, this));
-}
 
 template<typename T>
 void MultiState<T>::Prohibit(const T &state) {
-    GetRules().AddRule(rules::NotEqual(state, this));
+    GetRules()->AddRule(rules::NotEqual(state, this));
 }
 
 APL_NAMESPACE_END
