@@ -7,6 +7,7 @@
 #define RBDANALOGPOINT_HPP
 
 #include "AlarmPoint.hpp"
+#include "Rules.hpp"
 
 APL_NAMESPACE_BEGIN
 
@@ -21,11 +22,11 @@ public:
     inline auto operator<=>(this auto&& self, double value) {
         return self.GetValue() <=> value;
     }
-    void AddUpperBoundary(const std::shared_ptr<Analog> &otherPoint);
-    void AddUpperBoundary(double value);
+    rules::RuleHandle AddUpperBoundary(const std::shared_ptr<Analog> &otherPoint);
+    rules::RuleHandle AddUpperBoundary(double value);
 
-    void AddLowerBoundary(const std::shared_ptr<Analog> &otherPoint);
-    void AddLowerBoundary(double value);
+    rules::RuleHandle AddLowerBoundary(const std::shared_ptr<Analog> &otherPoint);
+    rules::RuleHandle AddLowerBoundary(double value);
 };
 
 APL_NAMESPACE_END

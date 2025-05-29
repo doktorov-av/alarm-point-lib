@@ -6,29 +6,34 @@
 #include "ModeAnalog.hpp"
 #include "Rules.hpp"
 
-apl::ModeAnalog::ModeAnalog(const std::shared_ptr<IPlant> &plant) : Analog(std::make_unique<ModeRuleSet>(plant)) {
+APL_NAMESPACE_BEGIN
+
+ModeAnalog::ModeAnalog(const std::shared_ptr<IPlant> &plant) : Analog(std::make_unique<ModeRuleSet>(plant)) {
     _modeRules = dynamic_cast<ModeRuleSet*>(GetRules());
     assert(_modeRules);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~ upper bounds overloads ~~~~~~~~~~~~~~~~~~~~ //
-void apl::ModeAnalog::AddUpperBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, apl::block_mode_t mode) {
-    AddUpperBoundaryImpl(otherPoint, mode);
+rules::RuleHandle ModeAnalog::AddUpperBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, block_mode_t mode) {
+    return AddUpperBoundaryImpl(otherPoint, mode);
 }
-void apl::ModeAnalog::AddUpperBoundary(double value, apl::block_mode_t mode) {
-    AddUpperBoundaryImpl(value, mode);
+
+rules::RuleHandle ModeAnalog::AddUpperBoundary(double value, block_mode_t mode) {
+    return AddUpperBoundaryImpl(value, mode);
 }
-void apl::ModeAnalog::AddUpperBoundary(const apl::ModeAnalog *otherPoint) {
-    AddUpperBoundaryImpl(otherPoint);
+rules::RuleHandle ModeAnalog::AddUpperBoundary(const ModeAnalog *otherPoint) {
+    return AddUpperBoundaryImpl(otherPoint);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~ lower bounds overloads ~~~~~~~~~~~~~~~~~~~~ //
-void apl::ModeAnalog::AddLowerBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, apl::block_mode_t mode) {
-    AddLowerBoundaryImpl(otherPoint, mode);
+rules::RuleHandle ModeAnalog::AddLowerBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, block_mode_t mode) {
+    return AddLowerBoundaryImpl(otherPoint, mode);
 }
-void apl::ModeAnalog::AddLowerBoundary(double value, apl::block_mode_t mode) {
-    AddLowerBoundaryImpl(value, mode);
+rules::RuleHandle ModeAnalog::AddLowerBoundary(double value, block_mode_t mode) {
+    return AddLowerBoundaryImpl(value, mode);
 }
-void apl::ModeAnalog::AddLowerBoundary(const apl::ModeAnalog *&otherPoint) {
-    AddLowerBoundaryImpl(otherPoint);
+rules::RuleHandle ModeAnalog::AddLowerBoundary(const ModeAnalog *&otherPoint) {
+    return AddLowerBoundaryImpl(otherPoint);
 }
+
+APL_NAMESPACE_END
