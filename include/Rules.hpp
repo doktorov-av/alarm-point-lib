@@ -80,8 +80,6 @@ static_assert(std::is_same_v<get_type_t<int *>, const int &>);
 template<class T, class V, class Comp>
 class Compare : public IRule {
 public:
-    using th_type = details::get_type_t<T>;
-    using v_type = details::get_type_t<V>;
     using msg_gen_t = std::function<std::string(void)>;
 
     Compare(T threshold, V value) : threshold_(threshold), value_(value) {}
