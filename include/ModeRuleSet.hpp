@@ -37,7 +37,7 @@ private:
     // rules for any modes
     RuleSet generalRules_;
     // reference to plant
-    std::weak_ptr<IPlant> plant_ = {};
+    std::shared_ptr<IPlant> plant_ = {};
 };
 
 
