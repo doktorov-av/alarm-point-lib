@@ -8,11 +8,9 @@
 void apl::RuleSet::AddRule(std::shared_ptr<IRule> rule) {
     rules.emplace_back(std::move(rule));
 }
-
 bool apl::RuleSet::Empty() const {
     return rules.empty();
 }
-
 std::shared_ptr<apl::IRule> apl::RuleSet::AnyBroken() const {
     const auto it = std::ranges::find_if(rules, [&](const auto &rule) { return !rule->Evaluate(); });
     return it != rules.end() ? *it : nullptr;

@@ -14,13 +14,16 @@
 APL_NAMESPACE_BEGIN
 
 class ModeAnalog : public Analog {
-    using Super = AlarmPoint;
+    using Super = Analog;
 
 public:
     explicit ModeAnalog(const std::shared_ptr<IPlant> &plant);
 
     inline auto operator<=> (const ModeAnalog &other) const { return GetValue() <=> other.GetValue(); }
     inline auto operator<=> (double value) const { return GetValue() <=> value; }
+
+    using Super::AddUpperBoundary;
+    using Super::AddLowerBoundary;
 
     rules::RuleHandle AddUpperBoundary(const std::shared_ptr<ModeAnalog> &otherPoint, block_mode_t mode);
     rules::RuleHandle AddUpperBoundary(const ModeAnalog *otherPoint);
