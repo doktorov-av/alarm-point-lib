@@ -19,14 +19,6 @@ namespace rules {
 
 namespace details {
 
-template<typename T>
-concept formattable = requires(T & v, std::format_context ctx) {
-    std::formatter<std::remove_cvref_t<T>>().format(v, ctx);
-};
-
-struct C {};
-static_assert(!formattable<C>, "C should not be formattable");
-static_assert(formattable<int>, "int should be formattable");
 
 template<typename T>
 struct ValueAccessor {
