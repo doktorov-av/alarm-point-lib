@@ -82,17 +82,9 @@ class Compare : public IRule {
 public:
     using th_type = details::get_type_t<T>;
     using v_type = details::get_type_t<V>;
-    using msg_gen_t = std::function<std::string(const V & /* value_ */, const T & /* threshold */)>;
+    using msg_gen_t = std::function<std::string(void)>;
 
     Compare(T threshold, V value) : threshold_(threshold), value_(value) {}
-
-    Compare(T threshold, V value, msg_gen_t msgGen) : Compare(threshold, value) { messageGen_ = std::move(msgGen); }
-
-    Compare(T threshold, V value, std::string_view failmsg) : Compare(threshold, value) {
-        if (!failmsg.empty()) {
-            Compare::SetFailDescription(std::string(failmsg));
-        }
-    }
 
     [[nodiscard]] bool Evaluate() const override {
         if (!details::IsValid(value_) || !details::IsValid(threshold_)) {
@@ -101,15 +93,17 @@ public:
         return Comp()(details::Get(value_), details::Get(threshold_));
     }
 
+    void SetFailDescription(const msg_gen_t &fn) override { messageGen_ = fn; }
+
     void SetFailDescription(const std::string &description) override {
-        messageGen_ = [desc = description](const V &, const T &) {
+        messageGen_ = [desc = description]() {
             return desc;
         };
     }
 
     [[nodiscard]] std::string GetFailDescription() const override {
         if (messageGen_) {
-            return messageGen_(value_, threshold_);
+            return messageGen_();
         }
         return "Comparison rule failed";
     }
@@ -120,11 +114,10 @@ private:
     msg_gen_t messageGen_ = nullptr;
 };
 
-#define DEF_COMPARE_RULE(functionName, comparator)                                                             \
-    template<class T, class V, class Msg = std::string_view>                                                   \
-    decltype(auto) functionName(T threshold, V value, Msg &&msg = {}) {                                        \
-        return std::make_shared<Compare<T, V, comparator>>(std::forward<T>(threshold), std::forward<V>(value), \
-                                                           std::forward<Msg>(msg));                            \
+#define DEF_COMPARE_RULE(functionName, comparator)                                                              \
+    template<class T, class V, class Msg = std::string_view>                                                    \
+    decltype(auto) functionName(T threshold, V value) {                                                         \
+        return std::make_shared<Compare<T, V, comparator>>(std::forward<T>(threshold), std::forward<V>(value)); \
     }
 
 DEF_COMPARE_RULE(Less, std::less<>);

@@ -26,6 +26,7 @@ public:
 protected:
     [[nodiscard]] std::shared_ptr<IRule> AnyGeneralBroken() const;
     [[nodiscard]] std::shared_ptr<IRule> AnyModeBroken() const;
+
 private:
     struct ModeEntry {
         std::shared_ptr<IRule> rule_ = nullptr;

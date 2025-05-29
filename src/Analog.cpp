@@ -26,17 +26,13 @@ rules::RuleHandle Analog::AddLowerBoundary(const std::shared_ptr<Analog> &otherP
 }
 
 rules::RuleHandle Analog::AddUpperBoundary(double value) {
-    decltype(auto) rule = rules::Less(value, this, [](const Analog *self, double bound) {
-        return std::format("Lower boundary exceeded: current value = {}, bound = {}", self->GetValue(), bound);
-    });
+    decltype(auto) rule = rules::Less(value, this);
     GetRules()->AddRule(rule);
     return rule;
 }
 
 rules::RuleHandle Analog::AddLowerBoundary(double value) {
-    decltype(auto) rule = rules::Greater(value, this, [](const Analog *self, double bound) {
-        return std::format("Upper boundary exceeded: current = {}, bound = {}", self->GetValue(), bound);
-    });
+    decltype(auto) rule = rules::Greater(value, this);
     GetRules()->AddRule(rule);
     return rule;
 }

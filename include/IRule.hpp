@@ -6,6 +6,8 @@
 #ifndef IRULE_HPP
 #define IRULE_HPP
 
+#include "functional"
+
 APL_NAMESPACE_BEGIN
 
 class IRule {
@@ -15,6 +17,7 @@ public:
     [[nodiscard]] virtual std::string GetFailDescription() const = 0;
 
     virtual void SetFailDescription(const std::string &description) = 0;
+    virtual void SetFailDescription(const std::function<std::string(void)>& fn) = 0;
 };
 
 APL_NAMESPACE_END
