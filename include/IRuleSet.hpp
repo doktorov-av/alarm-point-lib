@@ -20,6 +20,7 @@ public:
     virtual void AddRule(std::shared_ptr<IRule> rule) = 0;
     virtual void Clear() = 0;
 
+    // checks if there is any rules in rule set
     [[nodiscard]] virtual bool Empty() const = 0;
 
     // Finds first broken rule and returns it's pointer
