@@ -86,7 +86,7 @@ public:
 
     [[nodiscard]] bool Evaluate() const override {
         if (!details::IsValid(value_) || !details::IsValid(threshold_)) {
-            return false;
+            throw std::runtime_error("unable to evaluate rule");
         }
         return Comp()(details::Get(value_), details::Get(threshold_));
     }
