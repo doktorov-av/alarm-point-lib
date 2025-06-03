@@ -3,11 +3,11 @@
 // Copyright (c) 2025 Nikiet. All rights reserved.
 //
 
-#include "ModeAnalog.hpp"
+#include "Analog.hpp"
 #include "gtest/gtest.h"
 
-class TestModeAnalog : public apl::ModeAnalog {
-    using Super = apl::ModeAnalog;
+class TestModeAnalog : public apl::Analog {
+    using Super = apl::Analog;
 public:
     using Super::Super;
     [[nodiscard]] double GetValue() const override {
@@ -24,7 +24,7 @@ public:
 
 TEST(ModeAnalogTest, create) {
     auto plant = std::make_shared<TestPlant>();
-    TestModeAnalog modeAnalog(plant);
+    TestModeAnalog modeAnalog{plant};
     modeAnalog.AddUpperBoundary(10, 0);
     modeAnalog.AddLowerBoundary(-10, 0);
     ASSERT_FALSE(modeAnalog.InAlarm());

@@ -6,13 +6,16 @@
 #ifndef RBDANALOGPOINT_HPP
 #define RBDANALOGPOINT_HPP
 
+#include <utility>
+
 #include "AlarmPoint.hpp"
+#include "RuleBuilder.hpp"
 
 APL_NAMESPACE_BEGIN
 
 class Analog : public AlarmPoint {
 public:
-    explicit Analog(std::unique_ptr<IRuleSet>&& rules_ = std::make_unique<RuleSet>());
+    using AlarmPoint::AlarmPoint;
 
     [[nodiscard]] virtual double GetValue() const = 0;
     inline auto operator<=>(this auto&& self, const Analog & other) {
@@ -21,11 +24,30 @@ public:
     inline auto operator<=>(this auto&& self, double value) {
         return self.GetValue() <=> value;
     }
-    void AddUpperBoundary(const std::shared_ptr<Analog> &otherPoint);
-    void AddUpperBoundary(double value);
 
-    void AddLowerBoundary(const std::shared_ptr<Analog> &otherPoint);
-    void AddLowerBoundary(double value);
+    template<class T>
+    void AddUpperBoundary(T&& bound, block_mode_t mode) {
+        RuleBuilder builder(rules::Less(std::forward<T>(bound), this));
+        builder.Plant(GetPlant());
+        GetRules()->AddRule(builder.Build(mode));
+    }
+
+    template<class T>
+    void AddUpperBoundary(T&& bound) {
+        GetRules()->AddRule(rules::Less(std::forward<T>(bound), this));
+    }
+
+    template<class T>
+    void AddLowerBoundary(T&& bound) {
+        GetRules()->AddRule(rules::Greater(std::forward<T>(bound), this));
+    }
+
+    template<class T>
+    void AddLowerBoundary(T&& bound, block_mode_t mode) {
+        RuleBuilder builder(rules::Greater(std::forward<T>(bound), this));
+        builder.Plant(GetPlant());
+        GetRules()->AddRule(builder.Build(mode));
+    }
 };
 
 APL_NAMESPACE_END

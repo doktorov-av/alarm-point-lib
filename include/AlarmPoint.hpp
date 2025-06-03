@@ -9,8 +9,10 @@
 #include <type_traits>
 #include <utility>
 #include "IAlarmable.hpp"
+#include "IPlant.hpp"
 #include "RuleSet.hpp"
 #include "Utils.hpp"
+
 #include "cassert"
 APL_NAMESPACE_BEGIN
 
@@ -27,16 +29,16 @@ class AlarmPoint : public IAlarmable {
     };
 
 public:
-    explicit AlarmPoint(std::unique_ptr<IRuleSet> &&rules = std::make_unique<RuleSet>()) : rules_(std::move(rules)) {}
     AlarmPoint() = default;
+    explicit AlarmPoint(std::weak_ptr<IPlant> plant) : plant_(std::move(plant)) {}
 
-    void SetRules(std::unique_ptr<IRuleSet> &&newRules) { rules_ = std::move(newRules); }
     [[nodiscard]] inline decltype(auto) GetRules() const { return rules_.get(); }
+    [[nodiscard]] inline decltype(auto) GetPlant() const { return plant_; }
     [[nodiscard]] bool InAlarm() const override;
     [[nodiscard]] AlarmProxy GetAlarmState() const;
-
 private:
-    std::unique_ptr<IRuleSet> rules_ = nullptr;
+    std::unique_ptr<RuleSet> rules_ = std::make_unique<RuleSet>();
+    std::weak_ptr<IPlant> plant_ = {};
 };
 
 APL_NAMESPACE_END

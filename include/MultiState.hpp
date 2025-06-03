@@ -17,8 +17,7 @@ APL_NAMESPACE_BEGIN
 template<typename T>
 class MultiState : public AlarmPoint {
 public:
-    explicit MultiState(std::unique_ptr<IRuleSet> &&ruleSet = std::make_unique<RuleSet>()) :
-        AlarmPoint(std::move(ruleSet)) {}
+    using AlarmPoint::AlarmPoint;
 
     void Prohibit(const T &state);
 
