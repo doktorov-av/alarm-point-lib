@@ -6,7 +6,7 @@
 #ifndef IRULE_HPP
 #define IRULE_HPP
 
-#include "functional"
+#include "Types.hpp"
 
 APL_NAMESPACE_BEGIN
 
@@ -16,8 +16,9 @@ public:
     [[nodiscard]] virtual bool Evaluate() const = 0;
     [[nodiscard]] virtual std::string GetFailDescription() const = 0;
 
-    virtual void SetFailDescription(const std::string &description) = 0;
-    virtual void SetFailDescription(const std::function<std::string(void)>& fn) = 0;
+    [[nodiscard]] virtual bool IsActive() const = 0;
+    virtual void Enable() = 0;
+    virtual void Disable() = 0;
 };
 
 APL_NAMESPACE_END

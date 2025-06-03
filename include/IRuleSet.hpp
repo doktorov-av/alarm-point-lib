@@ -17,7 +17,6 @@ class IRuleSet {
 public:
     virtual ~IRuleSet() = default;
 
-    virtual void AddRule(std::shared_ptr<IRule> rule) = 0;
     virtual void Clear() = 0;
 
     // checks if there is any rules in rule set

@@ -18,7 +18,7 @@ class RuleSet : public IRuleSet {
 public:
     RuleSet() = default;
 
-    void AddRule(std::shared_ptr<IRule> rule) override;
+    void AddRule(std::shared_ptr<IRule> rule);
     void Clear() override;
     [[nodiscard]] bool Empty() const override;
 

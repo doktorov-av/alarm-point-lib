@@ -11,7 +11,7 @@ APL_NAMESPACE_BEGIN
 
 class Switch : public AlarmPoint {
 public:
-    explicit Switch(std::unique_ptr<IRuleSet>&& rules = std::make_unique<RuleSet>());
+    using AlarmPoint::AlarmPoint;
     [[nodiscard]] virtual bool GetValue() const = 0;
     inline auto operator==(bool value) const { return GetValue() == value; }
     void SetAlarmState(bool alarmState);
