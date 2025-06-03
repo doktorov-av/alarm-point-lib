@@ -63,7 +63,7 @@ struct ValueAccessor<std::shared_ptr<T>> {
         return ValueAccessor<T>::Get(*value.get());  // dereference and recurse
     }
     static bool IsValid(const std::shared_ptr<T>& value) {
-        return !value && ValueAccessor<T>::IsValid(*value.get());
+        return value && ValueAccessor<T>::IsValid(*value.get());
     }
 };
 
