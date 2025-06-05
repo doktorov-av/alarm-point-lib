@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Configuration schema for alarm-notifier",
+  "description": "A configuration file for alarm-notifier",
+  "type": "array",
+  "items": {
+    "$ref": "file:./point.schema.json"
+  }
+}

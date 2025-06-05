@@ -1,0 +1,34 @@
+[
+  {
+    "name": "TEMP.SENSOR.FLOAT",
+    "point_type": "floating",
+    "Falarm" : {
+      "upper_bound" : 10,
+      "lower_bound" : -10
+    }
+  },
+  {
+    "name" : "TEMP.SENSOR.BOOL",
+    "point_type" : "boolean",
+    "Dalarm" : {
+      "alarm_state" : false
+    }
+  },
+  {
+    "name": "TEMP.SENSOR.MULTISTATE",
+    "point_type": "multi-state",
+    "Malarm": [
+      {
+        "name": "STATE1",
+        "prohibited": false,
+        "value": 1
+      },
+      {
+        "name": "STATE2",
+        "value": 2,
+        "prohibited": true,
+        "message": "Dangerous state of a point"
+      }
+    ]
+  }
+]
