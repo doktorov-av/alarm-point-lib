@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(${CONAN_PROJECT_NAME} VERSION ${CONAN_PROJECT_VERSION} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
