@@ -12,6 +12,11 @@ target_include_directories(alarm-point-lib PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(alarm-point-lib PUBLIC
+        nlohmann_json::nlohmann_json
+)
+
 target_compile_definitions(alarm-point-lib PUBLIC
         "APL_NAMESPACE_BEGIN=namespace apl {"
         "APL_NAMESPACE_END=}"
