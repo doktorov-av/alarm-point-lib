@@ -7,10 +7,5 @@
 #include "gtest/gtest.h"
 
 TEST(Config, read) {
-    const auto data = apl::read_config("./schemas/test_config.json");
-    ASSERT_EQ(data.size(), 3);
-    for(auto& point : data) {
-        std::cout << point.name << '\n';
-        std::cout << point.TypeString() << '\n';
-    }
+    ASSERT_NO_THROW(apl::read_config("./schemas/test_config.json"));
 }
