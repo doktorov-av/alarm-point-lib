@@ -7,12 +7,16 @@
 #include "Analog.hpp"
 #include "rbdlib.h"
 
+std::unique_ptr<apl::AlarmPoint> RbdPointFactory::makePoint(const apl::PointConfigData &configData) const {
+    assert(mlbIsOK());
+    return apl::PointFactory::makePoint(configData);
+}
+
 std::unique_ptr<apl::Analog> RbdPointFactory::makeAnalog(const apl::ConfigData<apl::Falarm> &configData) const {
     unsigned int id = 0;
     auto error = mlbUNum(configData.name.c_str(), &id, nullptr);
     if(error != LIBMLB_NOERROR) {
-        // @todo or throw exception
-        return nullptr;
+        throw std::runtime_error(std::format("Error {}: unable to create rbd point with {} name", mlbErrDescRu(error), configData.name));
     }
 
     auto point = std::make_unique<Analog>(id);

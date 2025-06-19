@@ -12,6 +12,8 @@
 
 class RbdPointFactory : public apl::PointFactory {
 public:
+    [[nodiscard]] std::unique_ptr<apl::AlarmPoint> makePoint(const apl::PointConfigData &configData) const override;
+protected:
     [[nodiscard]] std::unique_ptr<apl::Analog> makeAnalog(const apl::ConfigData<apl::Falarm> &configData) const override;
     [[nodiscard]] std::unique_ptr<apl::Switch> makeBoolean(const apl::ConfigData<apl::Dalarm> &configData) const override;
     [[nodiscard]] std::unique_ptr<apl::MultiState<int>> makeMultiState(const apl::ConfigData<apl::Malarm> &configData) const override;

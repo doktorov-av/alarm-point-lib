@@ -16,7 +16,7 @@ APL_NAMESPACE_BEGIN
 
 class PointFactory {
 public:
-    [[nodiscard]] std::unique_ptr<AlarmPoint> makePoint(const PointConfigData &configData) const;
+    [[nodiscard]] virtual std::unique_ptr<AlarmPoint> makePoint(const PointConfigData &configData) const;
 protected:
     [[nodiscard]] virtual std::unique_ptr<Analog> makeAnalog(const ConfigData<Falarm>& configData) const = 0;
     [[nodiscard]] virtual std::unique_ptr<Switch> makeBoolean(const ConfigData<Dalarm>& configData) const = 0;

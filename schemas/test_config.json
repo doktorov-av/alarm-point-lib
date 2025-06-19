@@ -1,6 +1,6 @@
 [
   {
-    "name": "TEMP.SENSOR.FLOAT",
+    "name": "228SG11P01B1D",
     "point_type": "floating",
     "Falarm" : {
       "upper_bound" : 10,
@@ -8,14 +8,14 @@
     }
   },
   {
-    "name" : "TEMP.SENSOR.BOOL",
+    "name" : "229RF21P02B2D",
     "point_type" : "boolean",
     "Dalarm" : {
       "alarm_state" : false
     }
   },
   {
-    "name": "TEMP.SENSOR.MULTISTATE",
+    "name": "229RF21P02B2D",
     "point_type": "multi-state",
     "Malarm": [
       {

@@ -9,6 +9,9 @@
 
 
 int main(int argc, char* argv[]) {
+    mlbInit(nullptr);
+    mlbOpenSPD();
+
     RbdPointFactory factory{};
     apl::AlarmPointRepo repo(factory);
     auto configs = apl::read_config(std::filesystem::path("./schemas/test_config.json"));
