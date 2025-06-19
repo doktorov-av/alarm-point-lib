@@ -7,9 +7,9 @@
 #include "gtest/gtest.h"
 
 TEST(Config, goodRead) {
-    ASSERT_NO_THROW(apl::read_config("./schemas/test_config.json", "./schemas/config.schema.json"));
+    ASSERT_NO_THROW(apl::read_config(std::filesystem::path("./schemas/test_config.json")));
 }
 
 TEST(Config, badRead) {
-    ASSERT_THROW(apl::read_config("./schemas/test_bad_config.json", "./schemas/config.schema.json"), std::exception);
+    ASSERT_THROW(apl::read_config(std::filesystem::path("./schemas/test_bad_config.json")), std::exception);
 }

@@ -13,7 +13,7 @@ APL_NAMESPACE_BEGIN
 using json = nlohmann::json;
 using json_validator = nlohmann::json_schema::json_validator;
 
-void validate(const json& j, const json& schema) {
+inline void validate(const json& j, const json& schema) {
     json_validator validator{};
     validator.set_root_schema(schema);
     validator.validate(j);

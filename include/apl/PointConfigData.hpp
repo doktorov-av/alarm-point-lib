@@ -1,15 +1,16 @@
 //
-// Created by Doktorov Alexander on 6/17/25.
+// Created by Doktorov Alexander on 6/19/25.
 // Copyright (c) 2025 Nikiet. All rights reserved.
 //
 
-#ifndef ALARM_POINT_LIB_CONFIGREADER_HPP
-#define ALARM_POINT_LIB_CONFIGREADER_HPP
+#ifndef ALARM_POINT_LIB_POINTCONFIGDATA_HPP
+#define ALARM_POINT_LIB_POINTCONFIGDATA_HPP
 
-#include <fstream>
-#include <string>
-#include <vector>
 #include "nlohmann/json.hpp"
+#include "optional"
+#include "string"
+#include "variant"
+#include "vector"
 
 APL_NAMESPACE_BEGIN
 
@@ -39,17 +40,29 @@ enum class Type { Undefined, Floating, Boolean, Multistate };
 
 using AlarmVariant = std::variant<Falarm, Dalarm, Malarm>;
 
-struct DataPoint {
+template<class T>
+struct ConfigData {
+    std::string name;
+    Type type = Type::Undefined;
+    T alarmConfig;
+};
+
+struct PointConfigData {
     [[nodiscard]] std::string_view TypeString() const;
+
+    template<class T>
+    [[nodiscard]] decltype(auto) to_config_data() const {
+        auto result = ConfigData<T>();
+        result.alarmConfig = std::get<T>(alarm);
+        result.type = type;
+        result.name = name;
+        return result;
+    }
+
     std::string name;
     Type type = Type::Undefined;
     AlarmVariant alarm;
 };
-
-std::vector<DataPoint> read_config(const std::filesystem::path &path, const std::filesystem::path &schema);
-std::vector<DataPoint> read_config(const json &config) noexcept;
-json parse_config(const std::filesystem::path &configFile, const std::filesystem::path &configSchema);
-json to_json(const std::filesystem::path &file);
 
 Type from_string(std::string_view str);
 std::string_view to_string_view(Type type);
@@ -59,8 +72,8 @@ void from_json(const json &j, Falarm &f);
 void from_json(const json &j, Dalarm &d);
 void from_json(const json &j, MalarmState &state);
 void from_json(const json &j, Malarm &malarm);
-void from_json(const json &j, DataPoint &p);
+void from_json(const json &j, PointConfigData &p);
 
 APL_NAMESPACE_END
 
-#endif //ALARM_POINT_LIB_CONFIGREADER_HPP
+#endif //ALARM_POINT_LIB_POINTCONFIGDATA_HPP

@@ -1,0 +1,13 @@
+//
+// Created by Doktorov Alexander on 6/19/25.
+// Copyright (c) 2025 Nikiet. All rights reserved.
+//
+
+#ifndef ALARM_POINT_LIB_SCHEMA_H_IN_HPP
+#define ALARM_POINT_LIB_SCHEMA_H_IN_HPP
+
+#include "string_view"
+
+constexpr std::string_view JSON_SCHEMA = R"(@SCHEMA_CONTENTS@)";
+
+#endif //ALARM_POINT_LIB_SCHEMA_H_IN_HPP
