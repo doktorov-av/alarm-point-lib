@@ -13,8 +13,11 @@ target_include_directories(alarm-point-lib PUBLIC
 )
 
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(nlohmann_json_schema_validator REQUIRED)
+
 target_link_libraries(alarm-point-lib PUBLIC
         nlohmann_json::nlohmann_json
+        nlohmann_json_schema_validator
 )
 
 target_compile_definitions(alarm-point-lib PUBLIC

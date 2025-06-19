@@ -4,13 +4,29 @@
 //
 
 #include "ConfigReader.hpp"
+#include "ConfigValidator.hpp"
 
 APL_NAMESPACE_BEGIN
 
-std::vector<DataPoint> read_config(const std::filesystem::path &configFile) {
-    auto f = std::ifstream(configFile);
-    json data = json::parse(f);
-    return data.get<std::vector<DataPoint>>();
+std::vector<DataPoint> read_config(const std::filesystem::path &path, const std::filesystem::path &schema) {
+    const auto& configJson = parse_config(path, schema);
+    return read_config(configJson);
+}
+
+std::vector<DataPoint> read_config(const json &config) noexcept {
+    return config.get<std::vector<DataPoint>>();
+}
+
+json parse_config(const std::filesystem::path &configFile, const std::filesystem::path &configSchema) {
+    auto config = to_json(configFile);
+    auto schema = to_json(configSchema);
+    validate(config, schema); // throws exception if validation fails
+    return config;
+}
+
+json to_json(const std::filesystem::path &file) {
+    auto f = std::ifstream(file);
+    return json::parse(f);
 }
 
 void from_json(const json &j, DataPoint &p) {

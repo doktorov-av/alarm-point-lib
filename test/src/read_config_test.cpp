@@ -6,6 +6,10 @@
 #include "ConfigReader.hpp"
 #include "gtest/gtest.h"
 
-TEST(Config, read) {
-    ASSERT_NO_THROW(apl::read_config("./schemas/test_config.json"));
+TEST(Config, goodRead) {
+    ASSERT_NO_THROW(apl::read_config("./schemas/test_config.json", "./schemas/config.schema.json"));
+}
+
+TEST(Config, badRead) {
+    ASSERT_THROW(apl::read_config("./schemas/test_bad_config.json", "./schemas/config.schema.json"), std::exception);
 }

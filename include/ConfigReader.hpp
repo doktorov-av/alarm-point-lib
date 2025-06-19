@@ -46,7 +46,10 @@ struct DataPoint {
     AlarmVariant alarm;
 };
 
-std::vector<DataPoint> read_config(const std::filesystem::path &configFile);
+std::vector<DataPoint> read_config(const std::filesystem::path &path, const std::filesystem::path &schema);
+std::vector<DataPoint> read_config(const json &config) noexcept;
+json parse_config(const std::filesystem::path &configFile, const std::filesystem::path &configSchema);
+json to_json(const std::filesystem::path &file);
 
 Type from_string(std::string_view str);
 std::string_view to_string_view(Type type);

@@ -4,6 +4,185 @@
   "description": "A configuration file for alarm-notifier",
   "type": "array",
   "items": {
-    "$ref": "file:./point.schema.json"
+    "$ref": "#/definitions/point"
+  },
+  "definitions": {
+    "point" : {
+      "description": "An alarm point schema defined in alarm-notifier configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "point_type"
+      ],
+      "properties": {
+        "name": {
+          "description": "rbd point name",
+          "$ref": "#/definitions/string_schema",
+          "examples": [
+            "POINT_NAME",
+            "TEST.NAME.DOK"
+          ],
+          "minLength": 1
+        },
+        "point_type": {
+          "$ref": "#/definitions/string_schema",
+          "enum": [
+            "floating",
+            "boolean",
+            "multi-state"
+          ]
+        },
+        "Falarm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "upper_bound",
+            "lower_bound"
+          ],
+          "properties": {
+            "upper_bound": {
+              "type": "number"
+            },
+            "lower_bound": {
+              "type": "number"
+            }
+          }
+        },
+        "Dalarm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alarm_state"
+          ],
+          "properties": {
+            "alarm_state": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Malarm": {
+          "type": "array",
+          "additionalProperties": false,
+          "items": {
+            "$ref": "#/definitions/single_state"
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "point_type": {
+              "const": "boolean"
+            },
+            "Dalarm": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "point_type",
+            "Dalarm"
+          ]
+        },
+        {
+          "properties": {
+            "point_type": {
+              "const": "floating"
+            },
+            "Falarm": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "point_type",
+            "Falarm"
+          ]
+        },
+        {
+          "properties": {
+            "point_type": {
+              "const": "multi-state"
+            },
+            "Malarm": {
+              "type": "array"
+            }
+          },
+          "required": [
+            "point_type",
+            "Malarm"
+          ]
+        }
+      ]
+    },
+    "string_schema": {
+      "pattern": "^[\\w+\\-.]+[^%$#@!'+^\\-=.\\[\\]]$",
+      "type": "string"
+    },
+    "map_state": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "minProperties": 1,
+      "maxProperties": 1
+    },
+    "single_state": {
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "prohibited": {
+          "type": "boolean",
+          "default": false
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "prohibited": {
+                "const": true
+              }
+            },
+            "required": [
+              "prohibited"
+            ]
+          },
+          "then": {
+            "required": [
+              "message"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "prohibited": {
+                "const": false
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
   }
 }
