@@ -3,8 +3,8 @@
 // Copyright (c) 2025 Nikiet. All rights reserved.
 //
 
-#ifndef ALARM_POINT_LIB_POINTCONFIGDATA_HPP
-#define ALARM_POINT_LIB_POINTCONFIGDATA_HPP
+#ifndef ALARM_POINT_LIB_CONFIGDATA_HPP
+#define ALARM_POINT_LIB_CONFIGDATA_HPP
 
 #include "nlohmann/json.hpp"
 #include "optional"
@@ -25,43 +25,38 @@ struct Dalarm {
     bool alarm_state;
 };
 
+template<class T>
 struct MalarmState {
-    std::string name;
-    int value = 0;
+    T value = 0;
     bool prohibited = false;
     std::optional<std::string> message;
 };
 
+template<class T>
 struct Malarm {
-    std::vector<MalarmState> states;
+    using state_t = MalarmState<T>;
+    std::unordered_map<std::string, state_t> states;
 };
+
+using MalarmInt = Malarm<int>;
+using MalarmStateInt = MalarmInt::state_t;
 
 enum class Type { Undefined, Floating, Boolean, Multistate };
 
-using AlarmVariant = std::variant<Falarm, Dalarm, Malarm>;
+using AlarmVariant = std::variant<Falarm, Dalarm, MalarmInt>;
 
-template<class T>
 struct ConfigData {
-    std::string name;
-    Type type = Type::Undefined;
-    T alarmConfig;
-};
-
-struct PointConfigData {
-    [[nodiscard]] std::string_view TypeString() const;
-
     template<class T>
-    [[nodiscard]] decltype(auto) to_config_data() const {
-        auto result = ConfigData<T>();
-        result.alarmConfig = std::get<T>(alarm);
-        result.type = type;
-        result.name = name;
-        return result;
+    [[nodiscard]] decltype(auto) cast() const {
+        return std::get<T>(alarm);
     }
-
-    std::string name;
+    [[nodiscard]] std::string_view TypeString() const;
     Type type = Type::Undefined;
     AlarmVariant alarm;
+};
+
+struct PointConfigData : public ConfigData{
+    std::string name;
 };
 
 Type from_string(std::string_view str);
@@ -70,10 +65,10 @@ std::string_view to_string_view(Type type);
 // json parsing
 void from_json(const json &j, Falarm &f);
 void from_json(const json &j, Dalarm &d);
-void from_json(const json &j, MalarmState &state);
-void from_json(const json &j, Malarm &malarm);
+void from_json(const json &j, MalarmStateInt &state);
+void from_json(const json &j, MalarmInt &malarm);
 void from_json(const json &j, PointConfigData &p);
 
 APL_NAMESPACE_END
 
-#endif //ALARM_POINT_LIB_POINTCONFIGDATA_HPP
+#endif //ALARM_POINT_LIB_CONFIGDATA_HPP

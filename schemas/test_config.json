@@ -15,20 +15,18 @@
     }
   },
   {
-    "name": "229RF21P02B2D",
+    "name": "229RF21P02B2DXXX",
     "point_type": "multi-state",
-    "Malarm": [
-      {
-        "name": "STATE1",
+    "Malarm": {
+      "STATE1" : {
         "prohibited": false,
         "value": 1
       },
-      {
-        "name": "STATE2",
+      "STATE2" : {
         "value": 2,
         "prohibited": true,
         "message": "Dangerous state of a point"
       }
-    ]
+    }
   }
 ]

@@ -13,5 +13,4 @@ void Switch::SetAlarmState(bool alarmState) {
     GetRules()->AddRule(rules::NotEqual(alarmState, this));
 }
 
-
 APL_NAMESPACE_END

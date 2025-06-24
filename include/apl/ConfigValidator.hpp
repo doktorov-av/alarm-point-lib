@@ -7,10 +7,10 @@
 #define ALARM_POINT_LIB_CONFIGVALIDATOR_HPP
 
 #include "nlohmann/json-schema.hpp"
+#include "Types.hpp"
 
 APL_NAMESPACE_BEGIN
 
-using json = nlohmann::json;
 using json_validator = nlohmann::json_schema::json_validator;
 
 inline void validate(const json& j, const json& schema) {

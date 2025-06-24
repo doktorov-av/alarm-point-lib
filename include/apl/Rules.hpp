@@ -65,15 +65,35 @@ struct ValueAccessor<std::shared_ptr<T>> {
     static bool IsValid(const std::shared_ptr<T> &value) { return value && ValueAccessor<T>::IsValid(*value.get()); }
 };
 
+template<typename T>
+concept HasGetValue = requires(T&& t) {
+    { t.GetValue() };
+};
+
+// Specialization for types with GetValue function
+template<HasGetValue T>
+struct ValueAccessor<T> {
+    static constexpr decltype(auto) Get(const T& t) {
+        return t.GetValue();
+    }
+    static constexpr bool IsValid(const T& value) {
+        using invoke_result = std::invoke_result<decltype(&T::GetValue), T>;
+        if constexpr (std::is_convertible_v<invoke_result, bool>) {
+            return static_cast<bool>(value.GetValue());
+        }
+        return true;
+    }
+};
+
 // Helper functions to strip references/cv-qualifiers
 template<typename T>
-decltype(auto) Get(T &&val) {
+constexpr decltype(auto) Get(T &&val) {
     using CleanT = std::remove_cvref_t<T>;
     return ValueAccessor<CleanT>::Get(std::forward<T>(val));
 }
 
 template<typename T>
-bool IsValid(T &&val) {
+constexpr bool IsValid(T &&val) {
     using CleanT = std::remove_cvref_t<T>;
     return ValueAccessor<CleanT>::IsValid(std::forward<T>(val));
 }
@@ -83,6 +103,15 @@ using get_type_t = decltype(Get(std::declval<T>()));
 
 static_assert(std::is_same_v<get_type_t<std::weak_ptr<int>>, const int &>);
 static_assert(std::is_same_v<get_type_t<int *>, const int &>);
+
+// Tests
+struct _test_ {
+    [[nodiscard]] constexpr bool GetValue() const { return false; }
+};
+
+static_assert(HasGetValue<_test_>);
+static_assert(Get(_test_{}) == false);
+static_assert(IsValid(_test_{}) == true);
 
 } // namespace details
 
@@ -121,8 +150,6 @@ private:
 template<class T, class V, class Comp>
 class CompareRule : public Rule {
 public:
-    using th_type = details::get_type_t<T>;
-    using v_type = details::get_type_t<V>;
     using msg_gen_t = std::function<std::string(const V & /* value_ */, const T & /* threshold */)>;
 
     CompareRule(T threshold, V value) : threshold_(threshold), value_(value) {}

@@ -6,17 +6,18 @@
 #ifndef ALARM_POINT_LIB_RBDPOINTFACTORY_HPP
 #define ALARM_POINT_LIB_RBDPOINTFACTORY_HPP
 
-#include "Analog.hpp"
-#include "apl/PointFactory.hpp"
+#include "RbdAnalog.hpp"
+#include "apl/IPointFactory.hpp"
 #include "apl/Points.hpp"
 
-class RbdPointFactory : public apl::PointFactory {
+class RbdPointFactory : public apl::IPointFactory {
 public:
-    [[nodiscard]] std::unique_ptr<apl::AlarmPoint> makePoint(const apl::PointConfigData &configData) const override;
-protected:
-    [[nodiscard]] std::unique_ptr<apl::Analog> makeAnalog(const apl::ConfigData<apl::Falarm> &configData) const override;
-    [[nodiscard]] std::unique_ptr<apl::Switch> makeBoolean(const apl::ConfigData<apl::Dalarm> &configData) const override;
-    [[nodiscard]] std::unique_ptr<apl::MultiState<int>> makeMultiState(const apl::ConfigData<apl::Malarm> &configData) const override;
+    std::unique_ptr<apl::AlarmPoint> createAnalog(const std::string &name, const apl::Falarm &config,
+                                             std::weak_ptr<apl::IPlant> plant) override;
+    std::unique_ptr<apl::AlarmPoint> createSwitch(const std::string &name, const apl::Dalarm &config,
+                                             std::weak_ptr<apl::IPlant> plant) override;
+    std::unique_ptr<apl::AlarmPoint> createMultiState(const std::string &name, const apl::MalarmInt &config,
+                                                 std::weak_ptr<apl::IPlant> plant) override;
 };
 
 #endif //ALARM_POINT_LIB_RBDPOINTFACTORY_HPP

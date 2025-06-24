@@ -10,13 +10,21 @@
 
 APL_NAMESPACE_BEGIN
 
-std::vector<PointConfigData> read_config(const std::filesystem::path &path) {
+std::unordered_map<std::string, apl::ConfigData> read_config(const std::filesystem::path &path) {
     const auto& configJson = parse_config(path);
     return read_config(configJson);
 }
 
-std::vector<PointConfigData> read_config(const json &config) noexcept {
-    return config.get<std::vector<PointConfigData>>();
+std::unordered_map<std::string, apl::ConfigData> read_config(const json &config) noexcept {
+    std::unordered_map<std::string, apl::ConfigData> result{};
+    auto entries = config.get<std::vector<PointConfigData>>();
+    for(auto& item : entries) {
+        result[item.name] = ConfigData {
+            .type = item.type,
+            .alarm = item.alarm
+        };
+    }
+    return result;
 }
 
 json parse_config(const std::filesystem::path &configFile) {

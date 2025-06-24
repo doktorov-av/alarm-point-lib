@@ -7,6 +7,7 @@
 #define ALARM_POINT_LIB_SWITCH_HPP
 
 #include "AlarmPoint.hpp"
+
 APL_NAMESPACE_BEGIN
 
 class Switch : public AlarmPoint {

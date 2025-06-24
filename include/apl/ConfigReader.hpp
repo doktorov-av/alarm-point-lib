@@ -6,13 +6,13 @@
 #ifndef ALARM_POINT_LIB_CONFIGREADER_HPP
 #define ALARM_POINT_LIB_CONFIGREADER_HPP
 
+#include "ConfigData.hpp"
 #include "filesystem"
-#include "PointConfigData.hpp"
 
 APL_NAMESPACE_BEGIN
 
-std::vector<PointConfigData> read_config(const std::filesystem::path &path);
-std::vector<PointConfigData> read_config(const json &config) noexcept;
+std::unordered_map<std::string, apl::ConfigData> read_config(const std::filesystem::path &path);
+std::unordered_map<std::string, apl::ConfigData> read_config(const json &config) noexcept;
 json parse_config(const std::filesystem::path &configFile);
 json to_json(const std::filesystem::path &file);
 

@@ -3,7 +3,7 @@
 // Copyright (c) 2025 Nikiet. All rights reserved.
 //
 
-#include "PointConfigData.hpp"
+#include "ConfigData.hpp"
 
 APL_NAMESPACE_BEGIN
 
@@ -23,7 +23,7 @@ void from_json(const json &j, PointConfigData &p) {
             break;
         }
         case Type::Multistate: {
-            Malarm malarm;
+            MalarmInt malarm;
             j.at("Malarm").get_to(malarm.states);
             p.alarm = malarm;
             break;
@@ -32,12 +32,11 @@ void from_json(const json &j, PointConfigData &p) {
     }
 }
 
-void from_json(const json &j, Malarm &malarm) {
+void from_json(const json &j, MalarmInt &malarm) {
     j.get_to(malarm.states);
 }
 
-void from_json(const json &j, MalarmState &state) {
-    j.at("name").get_to(state.name);
+void from_json(const json &j, MalarmStateInt &state) {
     j.at("value").get_to(state.value);
     j.at("prohibited").get_to(state.prohibited);
     if (j.contains("message")) {
@@ -74,7 +73,7 @@ std::string_view to_string_view(Type type) {
     return "";
 }
 
-std::string_view PointConfigData::TypeString() const {
+std::string_view ConfigData::TypeString() const {
     return to_string_view(type);
 }
 

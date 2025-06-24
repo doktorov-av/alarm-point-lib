@@ -13,32 +13,29 @@
 #include "RuleSet.hpp"
 #include "Utils.hpp"
 
+#include "AlarmState.hpp"
 #include "cassert"
 APL_NAMESPACE_BEGIN
 
 class AlarmPoint : public IAlarmable {
-    class AlarmProxy {
-    public:
-        AlarmProxy() = default;
-        explicit AlarmProxy(std::shared_ptr<IRule> brokenRule) : alarmRule_(std::move(brokenRule)) {}
-        decltype(auto) GetBrokenRule() { return alarmRule_; }
-        explicit operator bool(this auto &&self) { return static_cast<bool>(self.alarmRule_); }
-
-    private:
-        std::shared_ptr<IRule> alarmRule_;
-    };
-
 public:
     AlarmPoint() = default;
+    explicit AlarmPoint(std::string name) : name(std::move(name)) {}
     explicit AlarmPoint(std::weak_ptr<IPlant> plant) : plant_(std::move(plant)) {}
+    explicit AlarmPoint(std::string name, std::weak_ptr<IPlant> plant) : name(std::move(name)), plant_(std::move(plant)) {}
+
+    virtual void SetName(const std::string& newName) { name = newName; }
+    [[nodiscard]] virtual std::string_view GetNameStrview() const { return name; }
+    [[nodiscard]] virtual std::string GetName() const { return name; }
 
     [[nodiscard]] inline decltype(auto) GetRules() const { return rules_.get(); }
     [[nodiscard]] inline decltype(auto) GetPlant() const { return plant_; }
     [[nodiscard]] bool InAlarm() const override;
-    [[nodiscard]] AlarmProxy GetAlarmState() const;
+    [[nodiscard]] AlarmState GetAlarmState() const;
 private:
     std::unique_ptr<RuleSet> rules_ = std::make_unique<RuleSet>();
     std::weak_ptr<IPlant> plant_ = {};
+    std::string name;
 };
 
 APL_NAMESPACE_END
