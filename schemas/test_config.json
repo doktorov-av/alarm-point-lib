@@ -8,6 +8,30 @@
     }
   },
   {
+    "name": "228SG11P01B1R",
+    "point_type": "floating",
+    "Falarm" : {
+      "upper_bound" : 10,
+      "lower_bound" : -10
+    }
+  },
+  {
+    "name": "229RF21P02B2",
+    "point_type": "floating",
+    "Falarm" : {
+      "upper_bound" : 10,
+      "lower_bound" : -10
+    }
+  },
+  {
+    "name": "228SG11P01B1D",
+    "point_type": "floating",
+    "Falarm" : {
+      "upper_bound" : 10,
+      "lower_bound" : -10
+    }
+  },
+  {
     "name" : "229RF21P02B2D",
     "point_type" : "boolean",
     "Dalarm" : {

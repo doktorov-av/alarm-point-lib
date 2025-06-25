@@ -18,6 +18,7 @@ public:
     explicit RuleBuilder(std::shared_ptr<IRule> baseRule) : _resultRule(std::move(baseRule)) {};
     explicit RuleBuilder(std::weak_ptr<IPlant> plant) : _plant(std::move(plant)) {};
 
+    void Reset(std::shared_ptr<IRule> baseRule) { _resultRule = std::move(baseRule); }
     void Plant(std::weak_ptr<IPlant> plant) { _plant = std::move(plant); }
     [[nodiscard]] std::shared_ptr<IRule> Build(block_mode_t mode) const {
         return rules::WithMode(_resultRule, _plant, mode);

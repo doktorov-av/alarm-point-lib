@@ -6,11 +6,11 @@
 #ifndef ALARM_POINT_LIB_TESTANALOGPOINT_HPP
 #define ALARM_POINT_LIB_TESTANALOGPOINT_HPP
 
-#include "Analog.hpp"
+#include "AlarmPoint.hpp"
 
-class TestAnalogPoint : public apl::Analog {
+class TestAnalogPoint : public apl::AlarmPoint {
 public:
-    [[nodiscard]] double GetValue() const override { return value_; }
+    [[nodiscard]] double GetValueImpl() const { return value_; }
     double value_ = 0.0;
 };
 

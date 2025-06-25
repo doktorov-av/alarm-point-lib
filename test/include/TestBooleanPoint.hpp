@@ -6,12 +6,12 @@
 #ifndef ALARM_POINT_LIB_TESTBOOLEANPOINT_HPP
 #define ALARM_POINT_LIB_TESTBOOLEANPOINT_HPP
 
-#include "Switch.hpp"
+#include "AlarmPoint.hpp"
 
-class TestBooleanPoint : public apl::Switch {
+class TestBooleanPoint : public apl::AlarmPoint {
 public:
-    using apl::Switch::Switch;
-    [[nodiscard]] bool GetValue() const override { return value_; }
+    using apl::AlarmPoint::AlarmPoint;
+    [[nodiscard]] bool GetValueImpl() const { return value_; }
     bool value_ = false;
 };
 

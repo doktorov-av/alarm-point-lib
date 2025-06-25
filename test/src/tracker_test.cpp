@@ -8,6 +8,7 @@
 #include "gmock/gmock.h"
 #include "Tracker.hpp"
 #include "TestBooleanPoint.hpp"
+#include "apl/Rules.hpp"
 
 class SimpleHandler : public apl::Handler {
 public:
@@ -26,7 +27,7 @@ TEST(Tracker, detects) {
     TestBooleanPoint booleanPoint("name");
     tracker.Update(&booleanPoint);
 
-    booleanPoint.SetAlarmState(true);
+    booleanPoint.Apply(apl::rules::NotEqualCmp(&booleanPoint, true));
     booleanPoint.value_ = true;
 
     tracker.Update(&booleanPoint);

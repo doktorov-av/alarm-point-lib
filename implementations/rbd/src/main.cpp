@@ -18,11 +18,12 @@ void sigint_handler(int signum) {
     is_running.store(false);
 }
 
-
 class Handler : public apl::Handler {
     void HandleChange(apl::AlarmPoint *alarmPoint, const apl::AlarmState &changedFrom, const apl::AlarmState &changedTo) override {
         if(auto ptr = changedTo.GetBrokenRule()) {
             std::cout << ptr->GetFailDescription() << '\n';
+        } else {
+            std::cout << alarmPoint->GetName() << " normalized\n";
         }
     }
 };

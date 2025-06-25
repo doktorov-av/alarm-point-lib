@@ -35,7 +35,7 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: AfterColon
 BreakConstructorInitializersBeforeComma: false
-ColumnLimit: 120
+ColumnLimit: 160
 CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ContinuationIndentWidth: 8

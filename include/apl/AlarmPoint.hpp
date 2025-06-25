@@ -21,20 +21,19 @@ class AlarmPoint : public IAlarmable {
 public:
     AlarmPoint() = default;
     explicit AlarmPoint(std::string name) : name(std::move(name)) {}
-    explicit AlarmPoint(std::weak_ptr<IPlant> plant) : plant_(std::move(plant)) {}
-    explicit AlarmPoint(std::string name, std::weak_ptr<IPlant> plant) : name(std::move(name)), plant_(std::move(plant)) {}
 
+    decltype(auto) GetValue(this auto&& self) { return self.GetValueImpl(); }
     virtual void SetName(const std::string& newName) { name = newName; }
     [[nodiscard]] virtual std::string_view GetNameStrview() const { return name; }
     [[nodiscard]] virtual std::string GetName() const { return name; }
 
     [[nodiscard]] inline decltype(auto) GetRules() const { return rules_.get(); }
-    [[nodiscard]] inline decltype(auto) GetPlant() const { return plant_; }
     [[nodiscard]] bool InAlarm() const override;
     [[nodiscard]] AlarmState GetAlarmState() const;
+
+    virtual void Apply(std::shared_ptr<IRule> rule) { rules_->AddRule(std::move(rule)); }
 private:
     std::unique_ptr<RuleSet> rules_ = std::make_unique<RuleSet>();
-    std::weak_ptr<IPlant> plant_ = {};
     std::string name;
 };
 

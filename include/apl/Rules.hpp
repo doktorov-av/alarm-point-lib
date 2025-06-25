@@ -22,9 +22,7 @@ namespace rules {
 namespace details {
 
 template<typename T>
-concept formattable = requires(T & v, std::format_context ctx) {
-    std::formatter<std::remove_cvref_t<T>>().format(v, ctx);
-};
+concept formattable = requires(T &v, std::format_context ctx) { std::formatter<std::remove_cvref_t<T>>().format(v, ctx); };
 
 struct C {};
 static_assert(!formattable<C>, "C should not be formattable");
@@ -51,9 +49,7 @@ struct ValueAccessor<std::weak_ptr<T>> {
     static decltype(auto) Get(const std::weak_ptr<T> &value) {
         return ValueAccessor<T>::Get(*value.lock()); // Lock, dereference, and recurse
     }
-    static bool IsValid(const std::weak_ptr<T> &value) {
-        return !value.expired() && ValueAccessor<T>::IsValid(*value.lock());
-    }
+    static bool IsValid(const std::weak_ptr<T> &value) { return !value.expired() && ValueAccessor<T>::IsValid(*value.lock()); }
 };
 
 // Specialization for std::shared_ptr
@@ -66,19 +62,17 @@ struct ValueAccessor<std::shared_ptr<T>> {
 };
 
 template<typename T>
-concept HasGetValue = requires(T&& t) {
+concept HasGetValue = requires(T &&t) {
     { t.GetValue() };
 };
 
 // Specialization for types with GetValue function
 template<HasGetValue T>
 struct ValueAccessor<T> {
-    static constexpr decltype(auto) Get(const T& t) {
-        return t.GetValue();
-    }
-    static constexpr bool IsValid(const T& value) {
-        using invoke_result = std::invoke_result<decltype(&T::GetValue), T>;
-        if constexpr (std::is_convertible_v<invoke_result, bool>) {
+    static constexpr decltype(auto) Get(const T &t) { return t.GetValue(); }
+    static constexpr bool IsValid(const T &value) {
+        using invoke_result = decltype(std::declval<T>().GetValue());
+        if constexpr (std::is_pointer_v<invoke_result>) {
             return static_cast<bool>(value.GetValue());
         }
         return true;
@@ -152,18 +146,15 @@ class CompareRule : public Rule {
 public:
     using msg_gen_t = std::function<std::string(const V & /* value_ */, const T & /* threshold */)>;
 
+    CompareRule() = default;
+
     CompareRule(T threshold, V value) : threshold_(threshold), value_(value) {}
 
-    CompareRule(T threshold, V value, msg_gen_t msgGen) : CompareRule(threshold, value) {
-        messageGen_ = std::move(msgGen);
-    }
+    CompareRule(T threshold, V value, msg_gen_t msgGen) : CompareRule(threshold, value) { messageGen_ = std::move(msgGen); }
 
     CompareRule(T threshold, V value, std::string_view failmsg) :
-        CompareRule(
-                threshold, value,
-                failmsg.empty() ? msg_gen_t{} : msg_gen_t([failmsg](const V & /* value_ */, const T & /* threshold */) {
-                    return std::string(failmsg);
-                })) {}
+        CompareRule(threshold, value,
+                    failmsg.empty() ? msg_gen_t{} : msg_gen_t([failmsg](const V & /* value_ */, const T & /* threshold */) { return std::string(failmsg); })) {}
 
 
     [[nodiscard]] bool Evaluate() const override {
@@ -185,6 +176,9 @@ public:
         return "Comparison rule failed";
     }
 
+    void SetThreshold(T &&threshold) { threshold_ = std::move(threshold); }
+    void SetValue(V &&value) { value_ = std::move(value); }
+
 private:
     T threshold_;
     V value_;
@@ -196,11 +190,10 @@ inline std::shared_ptr<IRule> WithMode(std::shared_ptr<IRule> rule, std::weak_pt
     return std::make_shared<ModeWrapperRule>(std::move(rule), std::move(plant), mode);
 }
 
-#define DEF_COMPARE_RULE(functionName, comparator)                                                                 \
-    template<class T, class V, class Msg = std::string_view>                                                       \
-    decltype(auto) functionName(T threshold, V value, Msg &&msg = {}) {                                            \
-        return std::make_shared<CompareRule<T, V, comparator>>(std::forward<T>(threshold), std::forward<V>(value), \
-                                                               std::forward<Msg>(msg));                            \
+#define DEF_COMPARE_RULE(functionName, comparator)                                                                                          \
+    template<class T, class V, class Msg = std::string_view>                                                                                \
+    decltype(auto) functionName(T threshold, V value, Msg &&msg = {}) {                                                                     \
+        return std::make_shared<CompareRule<T, V, comparator>>(std::forward<T>(threshold), std::forward<V>(value), std::forward<Msg>(msg)); \
     }
 
 DEF_COMPARE_RULE(Less, std::less<>);
@@ -210,7 +203,50 @@ DEF_COMPARE_RULE(NotEqual, std::not_equal_to<>);
 
 #undef DEF_COMPARE_RULE
 
-} // namespace rules
+template<class V, class T, class Comp>
+class CompRule : public Rule {
+public:
+    CompRule(V value, T thersehold) : value_(std::move(value)), threshold_(std::move(thersehold)) {}
+
+    [[nodiscard]] bool Evaluate() const override {
+        if (!IsActive())
+            return false;
+
+        bool bTV = details::IsValid(threshold_);
+        bool bVV = details::IsValid(value_);
+        if (!(bTV && bVV)) {
+            return false;
+        }
+        return Comp()(details::Get(value_), details::Get(threshold_));
+    }
+
+    [[nodiscard]] std::string GetFailDescription() const override {
+        if(details::IsValid(threshold_))
+            return std::format("comparison rule failed, threshold = {}", details::Get(threshold_));
+        return "comparison rule failed";
+    }
+
+private:
+    const V value_ = nullptr;
+    T threshold_;
+};
+
+#define MAKE_COMP_RULE(functionName, comparator)                                                                 \
+    template<class T, class V>                                                                                   \
+    decltype(auto) functionName(V value, T threshold) {                                                          \
+        return std::make_shared<CompRule<V, T, comparator>>(std::forward<V>(value), std::forward<T>(threshold)); \
+    }
+
+MAKE_COMP_RULE(LessCmp, std::less<>);
+MAKE_COMP_RULE(GreaterCmp, std::greater<>);
+MAKE_COMP_RULE(NotEqualCmp, std::not_equal_to<>);
+
+template<class T>
+void Apply(T &&holder, std::shared_ptr<IRule> rule) {
+    holder.GetRules()->AddRule(std::move(rule));
+}
+
+}; // namespace rules
 
 APL_NAMESPACE_END
 

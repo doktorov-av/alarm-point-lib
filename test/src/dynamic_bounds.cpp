@@ -4,6 +4,7 @@
 //
 
 #include "gtest/gtest.h"
+#include "Rules.hpp"
 #include "TestAnalogPoint.hpp"
 
 class DynamicBoundsFixture : public ::testing::Test  {
@@ -12,8 +13,8 @@ protected:
         pStatic.value_ = 0.0;
         pDynamicUpper->value_ = 10;
         pDynamicLower->value_ = -10;
-        pStatic.AddUpperBoundary(pDynamicUpper);
-        pStatic.AddLowerBoundary(pDynamicLower);
+        pStatic.Apply(apl::rules::LessCmp(&pStatic, &pDynamicUpper));
+        pStatic.Apply(apl::rules::GreaterCmp(&pStatic, &pDynamicLower));
     }
     std::shared_ptr<TestAnalogPoint> pDynamicUpper = std::make_shared<TestAnalogPoint>();
     std::shared_ptr<TestAnalogPoint> pDynamicLower = std::make_shared<TestAnalogPoint>();
@@ -22,19 +23,19 @@ protected:
 
 TEST_F(DynamicBoundsFixture, upper) {
     pStatic.value_ = 10;
-    EXPECT_TRUE(pStatic.GetAlarmState());
+    EXPECT_TRUE(pStatic.InAlarm());
     pDynamicUpper->value_ = 11;
-    ASSERT_FALSE(pStatic.GetAlarmState());
+    ASSERT_FALSE(pStatic.InAlarm());
     pDynamicLower->value_ = pStatic.value_;
-    ASSERT_TRUE(pStatic.GetAlarmState());
+    ASSERT_TRUE(pStatic.InAlarm());
 }
 
 TEST_F(DynamicBoundsFixture, lower) {
     pStatic.value_ = -10;
-    EXPECT_TRUE(pStatic.GetAlarmState());
+    EXPECT_TRUE(pStatic.InAlarm());
     pDynamicLower->value_ = -11;
-    ASSERT_FALSE(pStatic.GetAlarmState());
+    ASSERT_FALSE(pStatic.InAlarm());
     pDynamicLower->value_ = pStatic.value_;
-    ASSERT_TRUE(pStatic.GetAlarmState());
+    ASSERT_TRUE(pStatic.InAlarm());
 }
 
