@@ -8,9 +8,10 @@
 #include "apl/ConfigReader.hpp"
 #include "apl/Tracker.hpp"
 
+#include "RbdPlant.hpp"
+#include "csignal"
 #include "iostream"
 #include "thread"
-#include "csignal"
 
 std::atomic<bool> is_running = true;
 
@@ -32,9 +33,12 @@ int main(int argc, char* argv[]) {
     mlbInit(nullptr);
     mlbOpenSPD();
 
-    auto configMap = apl::read_config(std::filesystem::path("./schemas/test_config.json"));
     RbdPointFactory factory{};
-    auto points = factory.createPoints(configMap, {});
+
+    auto powerPlant = std::shared_ptr<RbdPlant>();
+    auto configMap = apl::read_config(std::filesystem::path("./schemas/test_config.json"));
+    auto points = factory.createPoints(configMap, powerPlant);
+
     Handler handler{};
     apl::Tracker tracker{handler};
 

@@ -7,125 +7,40 @@
     "$ref": "#/definitions/point"
   },
   "definitions": {
-    "point" : {
-      "description": "An alarm point schema defined in alarm-notifier configuration",
+    "upper_bounds": {
       "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "name",
-        "point_type"
-      ],
-      "properties": {
-        "name": {
-          "description": "rbd point name",
-          "$ref": "#/definitions/string_schema",
-          "examples": [
-            "POINT_NAME",
-            "TEST.NAME.DOK"
-          ],
-          "minLength": 1
-        },
-        "point_type": {
-          "$ref": "#/definitions/string_schema",
-          "enum": [
-            "floating",
-            "boolean",
-            "multi-state"
-          ]
-        },
-        "Falarm": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "upper_bound",
-            "lower_bound"
-          ],
-          "properties": {
-            "upper_bound": {
-              "type": "number"
-            },
-            "lower_bound": {
-              "type": "number"
-            }
-          }
-        },
-        "Dalarm": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alarm_state"
-          ],
-          "properties": {
-            "alarm_state": {
-              "type": "boolean"
-            }
-          }
-        },
-        "Malarm": {
-          "type": "object",
-          "additionalProperties": {
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "operational": {
             "type": "object",
             "properties": {
-              "prohibited": {
-                "type": "boolean",
-                "default": false
-              },
               "value": {
                 "type": "number"
-              },
-              "message": {
-                "type": "string"
               }
-            },
-            "required": ["value"],
-            "additionalProperties": false
+            }
+          },
+          "alarm": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "max-possible": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            }
           }
         }
-      },
-      "oneOf": [
-        {
-          "properties": {
-            "point_type": {
-              "const": "boolean"
-            },
-            "Dalarm": {
-              "type": "object"
-            }
-          },
-          "required": [
-            "point_type",
-            "Dalarm"
-          ]
-        },
-        {
-          "properties": {
-            "point_type": {
-              "const": "floating"
-            },
-            "Falarm": {
-              "type": "object"
-            }
-          },
-          "required": [
-            "point_type",
-            "Falarm"
-          ]
-        },
-        {
-          "properties": {
-            "point_type": {
-              "const": "multi-state"
-            },
-            "Malarm": {
-              "type": "object"
-            }
-          },
-          "required": [
-            "point_type",
-            "Malarm"
-          ]
-        }
-      ]
+      }
+    },
+    "lower_bounds": {
+      "$ref": "#/definitions/upper_bounds"
     },
     "string_schema": {
       "pattern": "^[\\w+\\-.]+[^%$#@!'+^\\-=.\\[\\]]$",
@@ -195,6 +110,128 @@
         }
       ],
       "additionalProperties": false
+    },
+    "point": {
+      "description": "An alarm point schema defined in alarm-notifier configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "point_type"
+      ],
+      "properties": {
+        "name": {
+          "description": "rbd point name",
+          "$ref": "#/definitions/string_schema",
+          "examples": [
+            "POINT_NAME",
+            "TEST.NAME.DOK"
+          ],
+          "minLength": 1
+        },
+        "point_type": {
+          "$ref": "#/definitions/string_schema",
+          "enum": [
+            "floating",
+            "boolean",
+            "multi-state"
+          ]
+        },
+        "Falarm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "upper_bounds": {
+              "$ref": "#/definitions/upper_bounds"
+            },
+            "lower_bounds": {
+              "$ref": "#/definitions/lower_bounds"
+            }
+          },
+          "required": [
+            "upper_bounds",
+            "lower_bounds"
+          ]
+        },
+        "Dalarm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alarm_state"
+          ],
+          "properties": {
+            "alarm_state": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Malarm": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "prohibited": {
+                "type": "boolean",
+                "default": false
+              },
+              "value": {
+                "type": "number"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "point_type": {
+              "const": "boolean"
+            },
+            "Dalarm": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "point_type",
+            "Dalarm"
+          ]
+        },
+        {
+          "properties": {
+            "point_type": {
+              "const": "floating"
+            },
+            "Falarm": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "point_type",
+            "Falarm"
+          ]
+        },
+        {
+          "properties": {
+            "point_type": {
+              "const": "multi-state"
+            },
+            "Malarm": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "point_type",
+            "Malarm"
+          ]
+        }
+      ]
     }
   }
 }

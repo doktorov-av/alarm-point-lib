@@ -6,6 +6,7 @@
 #ifndef ALARM_POINT_LIB_CONFIGDATA_HPP
 #define ALARM_POINT_LIB_CONFIGDATA_HPP
 
+#include "BoundTypes.hpp"
 #include "nlohmann/json.hpp"
 #include "optional"
 #include "string"
@@ -17,8 +18,8 @@ APL_NAMESPACE_BEGIN
 using json = nlohmann::json;
 
 struct Falarm {
-    double upper_bound;
-    double lower_bound;
+    std::unordered_map<EBoundType, double> upper_bounds;
+    std::unordered_map<EBoundType, double> lower_bounds;
 };
 
 struct Dalarm {

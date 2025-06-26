@@ -2,51 +2,47 @@
   {
     "name": "228SG11P01B1D",
     "point_type": "floating",
-    "Falarm" : {
-      "upper_bound" : 10,
-      "lower_bound" : -10
+    "Falarm": {
+      "upper_bounds": {
+        "operational": {
+          "value": 10
+        },
+        "alarm": {
+          "value": 20
+        },
+        "max-possible": {
+          "value": 30
+        }
+      },
+      "lower_bounds": {
+        "operational": {
+          "value": -10
+        },
+        "alarm": {
+          "value": -20
+        },
+        "max-possible": {
+          "value": -30
+        }
+      }
     }
   },
   {
-    "name": "228SG11P01B1R",
-    "point_type": "floating",
-    "Falarm" : {
-      "upper_bound" : 10,
-      "lower_bound" : -10
-    }
-  },
-  {
-    "name": "229RF21P02B2",
-    "point_type": "floating",
-    "Falarm" : {
-      "upper_bound" : 10,
-      "lower_bound" : -10
-    }
-  },
-  {
-    "name": "228SG11P01B1D",
-    "point_type": "floating",
-    "Falarm" : {
-      "upper_bound" : 10,
-      "lower_bound" : -10
-    }
-  },
-  {
-    "name" : "229RF21P02B2D",
-    "point_type" : "boolean",
-    "Dalarm" : {
-      "alarm_state" : false
+    "name": "229RF21P02B2D",
+    "point_type": "boolean",
+    "Dalarm": {
+      "alarm_state": false
     }
   },
   {
     "name": "229RF21P02B2DXXX",
     "point_type": "multi-state",
     "Malarm": {
-      "STATE1" : {
+      "STATE1": {
         "prohibited": false,
         "value": 1
       },
-      "STATE2" : {
+      "STATE2": {
         "value": 2,
         "prohibited": true,
         "message": "Dangerous state of a point"

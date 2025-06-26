@@ -49,8 +49,15 @@ void from_json(const json &j, Dalarm &d) {
 }
 
 void from_json(const json &j, Falarm &f) {
-    j.at("upper_bound").get_to(f.upper_bound);
-    j.at("lower_bound").get_to(f.lower_bound);
+    auto store = [](const auto& items, auto& outMap){
+        for (auto& [type_str, val] : items) {
+            EBoundType boundType = to_bound_type(type_str);
+            outMap[boundType] = val.at("value").template get<double>();
+        }
+    };
+
+    store(j.at("lower_bounds").items(), f.lower_bounds);
+    store(j.at("upper_bounds").items(), f.upper_bounds);
 }
 
 Type from_string(std::string_view str) {

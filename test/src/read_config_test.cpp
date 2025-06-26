@@ -32,16 +32,16 @@ TEST_F(ConfigTest, dalarm) {
 }
 
 TEST_F(ConfigTest, dalarmBadAccess) {
-    ASSERT_THROW(cfg.at(discreteName).cast<apl::Falarm>().lower_bound, std::bad_variant_access);
+    ASSERT_THROW(cfg.at(discreteName).cast<apl::Falarm>().upper_bounds.at(apl::EBoundType::Alarm), std::bad_variant_access);
 }
 
 TEST_F(ConfigTest, falarm) {
-    ASSERT_DOUBLE_EQ(cfg.at(analogName).cast<apl::Falarm>().upper_bound, 10);
-    ASSERT_DOUBLE_EQ(cfg.at(analogName).cast<apl::Falarm>().lower_bound, -10);
+    ASSERT_DOUBLE_EQ(cfg.at(analogName).cast<apl::Falarm>().upper_bounds.at(apl::EBoundType::Alarm), 20);
+    ASSERT_DOUBLE_EQ(cfg.at(analogName).cast<apl::Falarm>().lower_bounds.at(apl::EBoundType::Alarm), -20);
 }
 
 TEST_F(ConfigTest, falarmBadAccess) {
-    ASSERT_THROW(cfg[analogName].cast<apl::Dalarm>().alarm_state, std::bad_variant_access);
+    ASSERT_THROW((void)cfg[analogName].cast<apl::Dalarm>().alarm_state, std::bad_variant_access);
 }
 
 TEST_F(ConfigTest, malarm) {
@@ -52,5 +52,5 @@ TEST_F(ConfigTest, malarm) {
 }
 
 TEST_F(ConfigTest, malarmBadAccess) {
-    ASSERT_THROW(cfg.at(msName).cast<apl::Dalarm>().alarm_state, std::bad_variant_access);
+    ASSERT_THROW((void)cfg.at(msName).cast<apl::Dalarm>().alarm_state, std::bad_variant_access);
 }
