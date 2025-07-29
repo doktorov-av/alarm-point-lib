@@ -28,6 +28,7 @@ target_compile_definitions(alarm-point-lib PUBLIC
         "APL_NAMESPACE_END=}"
 )
 
+enable_testing()
 add_subdirectory(test)
 
 # rbd implementation

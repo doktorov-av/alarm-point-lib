@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
-enable_testing()
+
+message(STATUS "APL: Configurating tests")
 
 find_package(GTest REQUIRED)
 
@@ -19,3 +20,9 @@ add_executable(tests-all
 target_link_libraries(tests-all PRIVATE gtest::gtest alarm-point-lib)
 target_include_directories(tests-all PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(tests-all PRIVATE ${CMAKE_SOURCE_DIR}/include/apl)
+
+add_test(
+        NAME ctest_all
+        COMMAND tests-all
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Testing
+)
