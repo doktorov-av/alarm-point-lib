@@ -2,7 +2,7 @@
 
 This repository contains a possible implementation of 'Rule' system that are applied to 'Alarm points' to create an alarm state. 
 
-The target of this repository is provied users an interface where they can:
+The target of this repository is to provide users an interface where they can:
 
 1. Create their own static rules (e.g. `Point1.Greater(100) or Point2.Less(40)`)
 2. Create dynamic rules that rely on other points (e.g. `Point1.Less(Point2) or Point2.Equal(Multiply(Point2, 2))`)  
