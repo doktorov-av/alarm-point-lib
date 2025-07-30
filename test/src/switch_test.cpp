@@ -4,11 +4,12 @@
 //
 
 #include "gtest/gtest.h"
-#include "Switch.hpp"
+#include "AlarmPoint.hpp"
+#include "Rules.hpp"
 
-class SwitchTest : public apl::Switch {
+class SwitchTest : public apl::AlarmPoint {
 public:
-    [[nodiscard]] bool GetValue() const override { return value_; }
+    [[nodiscard]] bool GetValueImpl() const { return value_; }
     bool value_ = false;
 };
 
@@ -18,13 +19,13 @@ protected:
 };
 
 TEST_F(SwitchFixture, Alarm) {
-    _switch.SetAlarmState(false);
+    _switch.Apply(apl::rules::NotEqualCmp(&_switch, false));
     _switch.value_ = false;
     ASSERT_TRUE(_switch.InAlarm());
 }
 
 TEST_F(SwitchFixture, Ok) {
-    _switch.SetAlarmState(false);
+    _switch.Apply(apl::rules::NotEqualCmp(&_switch, false));
     _switch.value_ = true;
     ASSERT_FALSE(_switch.InAlarm());
 }

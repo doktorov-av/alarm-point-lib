@@ -11,8 +11,8 @@ bool AlarmPoint::InAlarm() const {
     return static_cast<bool>(GetAlarmState());
 }
 
-AlarmPoint::AlarmProxy AlarmPoint::GetAlarmState() const {
-    return rules_ ? AlarmProxy{rules_->AnyBroken()} : AlarmProxy();
+AlarmState AlarmPoint::GetAlarmState() const {
+    return rules_ ? AlarmState{rules_->AnyBroken()} : AlarmState();
 }
 
 APL_NAMESPACE_END

@@ -6,12 +6,16 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
+#include "nlohmann/json.hpp"
+
 APL_NAMESPACE_BEGIN
 
 using block_mode_t      = unsigned int;
 using analog_t          = double;
 using discrete_t        = bool;
 using qs_t              = int;
+
+using json = nlohmann::json;
 
 APL_NAMESPACE_END
 

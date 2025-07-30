@@ -4,21 +4,22 @@
 //
 
 #include "TestAnalogPoint.hpp"
+#include "apl/Rules.hpp"
 #include "gtest/gtest.h"
 
 class BoundsFixture : public ::testing::TestWithParam<std::tuple<double /* value */, bool /* alarm? */>>  {
 protected:
     void SetUp() override {
         point.value_ = 0.0;
-        point.AddUpperBoundary(10);
-        point.AddLowerBoundary(-10);
+        point.Apply(apl::rules::LessCmp(&point, 10));
+        point.Apply(apl::rules::GreaterCmp(&point, -10));
     }
     TestAnalogPoint point{};
 };
 
 TEST_P(BoundsFixture, upper_equal) {
     point.value_ = std::get<0>(GetParam());
-    ASSERT_EQ(static_cast<bool>(point.GetAlarmState()), std::get<1>(GetParam()));
+    ASSERT_EQ(point.InAlarm(), std::get<1>(GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

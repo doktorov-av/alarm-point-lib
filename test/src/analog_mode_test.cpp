@@ -3,14 +3,14 @@
 // Copyright (c) 2025 Nikiet. All rights reserved.
 //
 
-#include "ModeAnalog.hpp"
+#include "AlarmPoint.hpp"
+#include "Rules.hpp"
 #include "gtest/gtest.h"
 
-class TestModeAnalog : public apl::ModeAnalog {
-    using Super = apl::ModeAnalog;
+class TestModeAnalog : public apl::AlarmPoint {
 public:
-    using Super::Super;
-    [[nodiscard]] double GetValue() const override {
+    using apl::AlarmPoint::AlarmPoint;
+    [[nodiscard]] double GetValueImpl() const {
         return value_;
     }
     double value_ = 0;
@@ -24,20 +24,23 @@ public:
 
 TEST(ModeAnalogTest, create) {
     auto plant = std::make_shared<TestPlant>();
-    TestModeAnalog modeAnalog(plant);
-    modeAnalog.AddUpperBoundary(10, 0);
-    modeAnalog.AddLowerBoundary(-10, 0);
+    TestModeAnalog modeAnalog{};
+    modeAnalog.Apply(apl::rules::LessCmp(&modeAnalog, 10.0));
+    modeAnalog.Apply(apl::rules::GreaterCmp(&modeAnalog, -10.0));
+
     ASSERT_FALSE(modeAnalog.InAlarm());
+
     modeAnalog.value_ = 10;
     ASSERT_TRUE(modeAnalog.InAlarm());
 
+    modeAnalog.GetRules()->Clear();
     plant->mode_ = 1;
-    modeAnalog.AddUpperBoundary(20, plant->mode_);
-    modeAnalog.AddLowerBoundary(-20, plant->mode_);
+    modeAnalog.Apply(apl::rules::WithMode(apl::rules::LessCmp(&modeAnalog, 20.0), plant, plant->mode_));
+    modeAnalog.Apply(apl::rules::WithMode(apl::rules::GreaterCmp(&modeAnalog, -20.0), plant, plant->mode_));
     ASSERT_FALSE(modeAnalog.InAlarm());
 
-    plant->mode_ = 0;
+    modeAnalog.value_ = 20;
     ASSERT_TRUE(modeAnalog.InAlarm());
-    plant->mode_ = 1;
-    ASSERT_FALSE(modeAnalog.InAlarm());
+    modeAnalog.value_ = -20;
+    ASSERT_TRUE(modeAnalog.InAlarm());
 }
